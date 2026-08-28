@@ -1,0 +1,25 @@
+# Configuracion sensible (credenciales de Supabase) - ver config.properties.example
+config.properties
+
+# Compilado / empaquetado
+target/
+*.class
+
+# Reportes de impacto generados (RF-07)
+*.xlsx
+
+# Respaldos (RNF-05)
+backups/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
