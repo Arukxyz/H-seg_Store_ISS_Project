@@ -21,17 +21,35 @@ import java.util.Optional;
  */
 public final class VentaDAO {
 
-    public List<Venta> listarWeb(EstadoVenta estado, Connection conexion) throws SQLException {
-        String base = """
+    /** Lista pedidos web, filtrables por estado y rango de fechas (los tres filtros son opcionales). */
+    public List<Venta> listarWeb(EstadoVenta estado, OffsetDateTime desde, OffsetDateTime hasta, Connection conexion) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
                 SELECT v.*, c.nombre AS cliente_nombre
                   FROM venta v
                   LEFT JOIN cliente c ON c.id = v.id_cliente
                  WHERE v.origen = 'WEB'
-                """;
-        String sql = estado == null ? base + " ORDER BY v.fecha DESC" : base + " AND v.estado = ? ORDER BY v.fecha DESC";
-        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+                """);
+        if (estado != null) {
+            sql.append(" AND v.estado = ?");
+        }
+        if (desde != null) {
+            sql.append(" AND v.fecha >= ?");
+        }
+        if (hasta != null) {
+            sql.append(" AND v.fecha <= ?");
+        }
+        sql.append(" ORDER BY v.fecha DESC");
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
+            int indice = 1;
             if (estado != null) {
-                ps.setString(1, estado.name());
+                ps.setString(indice++, estado.name());
+            }
+            if (desde != null) {
+                ps.setObject(indice++, desde);
+            }
+            if (hasta != null) {
+                ps.setObject(indice++, hasta);
             }
             try (ResultSet rs = ps.executeQuery()) {
                 List<Venta> resultado = new ArrayList<>();

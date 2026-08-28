@@ -108,7 +108,7 @@ public class MenuPrincipalJFrame extends JFrame {
         boolean esAdministrador = usuario.getRol() == RolUsuario.ADMINISTRADOR;
 
         panel.add(botonModulo("Gestión de productos", true, () -> new GestionProductosJFrame().setVisible(true)));
-        panel.add(botonModulo("Pedidos web", true, null));
+        panel.add(botonModulo("Pedidos web", true, () -> new PedidosWebJFrame().setVisible(true)));
         panel.add(botonModulo("Despacho de lotes", true, null));
         panel.add(botonModulo("Reportes de impacto", esAdministrador, null));
         panel.add(botonModulo("Pedidos a proveedores", esAdministrador, null));
