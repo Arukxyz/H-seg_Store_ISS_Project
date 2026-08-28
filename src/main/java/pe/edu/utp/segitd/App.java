@@ -1,36 +1,34 @@
 package pe.edu.utp.segitd;
 
-import pe.edu.utp.segitd.db.ConexionBD;
+import com.formdev.flatlaf.FlatLightLaf;
+import pe.edu.utp.segitd.config.AppConfig;
+import pe.edu.utp.segitd.vista.LoginJFrame;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
-/**
- * Punto de entrada de la aplicacion.
- * TODO: reemplazar la prueba de conexion por FlatLaf + LoginJFrame
- * cuando esas clases existan (ver seccion 12 del documento de especificacion).
- */
+/** Punto de entrada de la aplicación. */
 public final class App {
 
     private App() {
     }
 
     public static void main(String[] args) {
-        System.out.println("SEGITD-HOSEG -- probando conexion a Supabase...");
-        try (Connection conexion = ConexionBD.obtenerConexion();
-             Statement sentencia = conexion.createStatement()) {
+        FlatLightLaf.setup();
+        SwingUtilities.invokeLater(App::iniciar);
+    }
 
-            sentencia.executeQuery("SELECT 1");
-            System.out.println("Conexion exitosa: " + conexion.getMetaData().getURL());
+    private static void iniciar() {
+        try {
+            // Fuerza la validación de configuración aquí, con un diálogo
+            // visible: un .jar de escritorio abierto con doble clic no
+            // tiene consola donde el usuario pueda ver un mensaje de error.
+            AppConfig.obtenerInstancia();
         } catch (IllegalStateException e) {
-            System.err.println("Configuracion incompleta: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error de configuración", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
-        } catch (SQLException e) {
-            System.err.println("No se pudo conectar a la base de datos: " + e.getMessage());
-            System.exit(1);
-        } finally {
-            ConexionBD.cerrar();
+            return;
         }
+        new LoginJFrame().setVisible(true);
     }
 }

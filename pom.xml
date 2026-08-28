@@ -25,6 +25,7 @@
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
         <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
+        <exec.mainClass>pe.edu.utp.segitd.App</exec.mainClass>
     </properties>
 
     <dependencies>
@@ -103,13 +104,14 @@
                 </executions>
             </plugin>
 
-            <!-- Conveniencia para desarrollo: mvn compile exec:java -->
+            <!-- Conveniencia para desarrollo: mvn compile exec:java
+                 (mvn compile exec:java -Dexec.mainClass=otra.Clase para sobreescribir) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>pe.edu.utp.segitd.App</mainClass>
+                    <mainClass>${exec.mainClass}</mainClass>
                 </configuration>
             </plugin>
         </plugins>
