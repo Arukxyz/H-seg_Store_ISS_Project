@@ -73,4 +73,9 @@ public class Producto {
 
     public OffsetDateTime getCreadoEn() { return creadoEn; }
     public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
+
+    @Override
+    public String toString() {
+        return codigo + " — " + nombre;
+    }
 }

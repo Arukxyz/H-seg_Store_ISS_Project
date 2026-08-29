@@ -135,14 +135,15 @@ CREATE TABLE proveedor (
 );
 
 CREATE TABLE pedido_proveedor (
-    id           SERIAL PRIMARY KEY,
-    id_proveedor INTEGER NOT NULL REFERENCES proveedor(id),
-    descripcion  VARCHAR(255) NOT NULL,
-    cantidad     INTEGER NOT NULL CHECK (cantidad > 0),
-    fecha        TIMESTAMPTZ NOT NULL DEFAULT now(),
-    estado       VARCHAR(12) NOT NULL DEFAULT 'SOLICITADO'
-                 CHECK (estado IN ('SOLICITADO','RECIBIDO','ANULADO')),
-    id_usuario   INTEGER REFERENCES usuario(id)
+    id              SERIAL PRIMARY KEY,
+    id_proveedor    INTEGER NOT NULL REFERENCES proveedor(id),
+    codigo_producto VARCHAR(30) REFERENCES producto(codigo),  -- a qué producto del catálogo repone este pedido
+    descripcion     VARCHAR(255) NOT NULL,
+    cantidad        INTEGER NOT NULL CHECK (cantidad > 0),
+    fecha           TIMESTAMPTZ NOT NULL DEFAULT now(),
+    estado          VARCHAR(12) NOT NULL DEFAULT 'SOLICITADO'
+                    CHECK (estado IN ('SOLICITADO','RECIBIDO','ANULADO')),
+    id_usuario      INTEGER REFERENCES usuario(id)
 );
 
 -- ---------- Bitácora de inventario -----------------------------------

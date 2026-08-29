@@ -26,4 +26,9 @@ public class Proveedor {
 
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+
+    @Override
+    public String toString() {
+        return nombreTaller;
+    }
 }

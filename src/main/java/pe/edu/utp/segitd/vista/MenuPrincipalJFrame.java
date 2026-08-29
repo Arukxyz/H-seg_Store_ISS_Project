@@ -3,6 +3,7 @@ package pe.edu.utp.segitd.vista;
 import pe.edu.utp.segitd.controlador.MenuPrincipalControlador;
 import pe.edu.utp.segitd.modelo.RolUsuario;
 import pe.edu.utp.segitd.modelo.Usuario;
+import pe.edu.utp.segitd.servicio.BackupService;
 import pe.edu.utp.segitd.servicio.IndicadoresDashboard;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
@@ -19,6 +20,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.nio.file.Path;
 
 /**
  * Dashboard principal: indicadores en vivo y accesos a cada módulo,
@@ -27,6 +31,7 @@ import java.awt.GridLayout;
 public class MenuPrincipalJFrame extends JFrame {
 
     private final MenuPrincipalControlador controlador = new MenuPrincipalControlador();
+    private final BackupService backupService = new BackupService();
 
     private final JLabel indicadorConexion = new JLabel();
     private final JLabel valorProductosActivos = new JLabel("-");
@@ -37,12 +42,18 @@ public class MenuPrincipalJFrame extends JFrame {
 
     public MenuPrincipalJFrame() {
         super("SEGITD-HÖSÉG · Panel principal");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setContentPane(construirContenido());
         setMinimumSize(new Dimension(760, 480));
         pack();
         setLocationRelativeTo(null);
         actualizarPanel();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                cerrarAplicacion();
+            }
+        });
     }
 
     private JPanel construirContenido() {
@@ -69,6 +80,10 @@ public class MenuPrincipalJFrame extends JFrame {
         JButton botonActualizar = new JButton("Actualizar");
         botonActualizar.addActionListener(e -> actualizarPanel());
         derecha.add(botonActualizar);
+        JButton botonRespaldar = new JButton("Respaldar ahora");
+        botonRespaldar.setEnabled(usuario.getRol() == RolUsuario.ADMINISTRADOR);
+        botonRespaldar.addActionListener(e -> respaldarAhora());
+        derecha.add(botonRespaldar);
         JButton botonCerrarSesion = new JButton("Cerrar sesión");
         botonCerrarSesion.addActionListener(e -> cerrarSesion());
         derecha.add(botonCerrarSesion);
@@ -110,9 +125,9 @@ public class MenuPrincipalJFrame extends JFrame {
         panel.add(botonModulo("Gestión de productos", true, () -> new GestionProductosJFrame().setVisible(true)));
         panel.add(botonModulo("Pedidos web", true, () -> new PedidosWebJFrame().setVisible(true)));
         panel.add(botonModulo("Despacho de lotes", true, () -> new DespachoLotesJFrame().setVisible(true)));
-        panel.add(botonModulo("Reportes de impacto", esAdministrador, null));
-        panel.add(botonModulo("Pedidos a proveedores", esAdministrador, null));
-        panel.add(botonModulo("Gestión de usuarios", esAdministrador, null));
+        panel.add(botonModulo("Reportes de impacto", esAdministrador, () -> new ReportesImpactoJFrame().setVisible(true)));
+        panel.add(botonModulo("Pedidos a proveedores", esAdministrador, () -> new ProveedoresJFrame().setVisible(true)));
+        panel.add(botonModulo("Gestión de usuarios", esAdministrador, () -> new UsuariosJFrame().setVisible(true)));
 
         return panel;
     }
@@ -168,5 +183,30 @@ public class MenuPrincipalJFrame extends JFrame {
         controlador.cerrarSesion();
         dispose();
         new LoginJFrame().setVisible(true);
+    }
+
+    private void respaldarAhora() {
+        try {
+            Path carpeta = backupService.ejecutarBackup();
+            JOptionPane.showMessageDialog(this, "Respaldo generado en " + carpeta.toAbsolutePath(),
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ServicioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** RNF-05: respaldo automático al cerrar si pasaron más de 24 h desde el último. */
+    private void cerrarAplicacion() {
+        try {
+            if (backupService.debeRespaldarAutomaticamente()) {
+                backupService.ejecutarBackup();
+            }
+        } catch (ServicioException e) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo generar el respaldo automático: " + e.getMessage(),
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+        dispose();
+        System.exit(0);
     }
 }

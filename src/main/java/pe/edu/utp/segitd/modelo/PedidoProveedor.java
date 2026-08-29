@@ -8,6 +8,9 @@ public class PedidoProveedor {
     private int idProveedor;
     /** Solo lectura: poblado por ProveedorDAO mediante JOIN con proveedor, no se persiste. */
     private String nombreTaller;
+    private String codigoProducto;
+    /** Solo lectura: poblado por ProveedorDAO mediante JOIN con producto, no se persiste. */
+    private String nombreProducto;
     private String descripcion;
     private int cantidad;
     private OffsetDateTime fecha;
@@ -22,6 +25,12 @@ public class PedidoProveedor {
 
     public String getNombreTaller() { return nombreTaller; }
     public void setNombreTaller(String nombreTaller) { this.nombreTaller = nombreTaller; }
+
+    public String getCodigoProducto() { return codigoProducto; }
+    public void setCodigoProducto(String codigoProducto) { this.codigoProducto = codigoProducto; }
+
+    public String getNombreProducto() { return nombreProducto; }
+    public void setNombreProducto(String nombreProducto) { this.nombreProducto = nombreProducto; }
 
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }

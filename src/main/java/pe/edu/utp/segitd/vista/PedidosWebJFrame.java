@@ -6,6 +6,7 @@ import pe.edu.utp.segitd.modelo.Donacion;
 import pe.edu.utp.segitd.modelo.EstadoVenta;
 import pe.edu.utp.segitd.modelo.Venta;
 import pe.edu.utp.segitd.servicio.ServicioException;
+import pe.edu.utp.segitd.util.FechaUtil;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -19,7 +20,6 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerDateModel;
 import javax.swing.Timer;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.table.AbstractTableModel;
@@ -30,12 +30,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -59,8 +55,8 @@ public class PedidosWebJFrame extends JFrame {
 
     private final JComboBox<EstadoVenta> comboEstado =
             new JComboBox<>(new EstadoVenta[]{null, EstadoVenta.PENDIENTE, EstadoVenta.PAGADO, EstadoVenta.ANULADO});
-    private final JSpinner spinnerDesde = crearSpinnerFecha(-30);
-    private final JSpinner spinnerHasta = crearSpinnerFecha(1);
+    private final JSpinner spinnerDesde = FechaUtil.crearSpinnerFecha(-30);
+    private final JSpinner spinnerHasta = FechaUtil.crearSpinnerFecha(1);
 
     private final JButton botonConfirmar = new JButton("Confirmar pedido");
     private final JButton botonAnular = new JButton("Anular pedido");
@@ -160,8 +156,8 @@ public class PedidosWebJFrame extends JFrame {
     private void cargarPedidos() {
         try {
             EstadoVenta estado = (EstadoVenta) comboEstado.getSelectedItem();
-            OffsetDateTime desde = inicioDelDia((Date) spinnerDesde.getValue());
-            OffsetDateTime hasta = finDelDia((Date) spinnerHasta.getValue());
+            OffsetDateTime desde = FechaUtil.inicioDelDia((Date) spinnerDesde.getValue());
+            OffsetDateTime hasta = FechaUtil.finDelDia((Date) spinnerHasta.getValue());
             modeloPedidos.actualizar(controlador.listarPedidos(estado, desde, hasta));
             etiquetaEstado.setText("Actualizado: " + FORMATO_FECHA.format(OffsetDateTime.now()));
         } catch (ServicioException e) {
@@ -232,25 +228,6 @@ public class PedidosWebJFrame extends JFrame {
         } catch (ServicioException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private static JSpinner crearSpinnerFecha(int diasDesdeHoy) {
-        Calendar calendario = Calendar.getInstance();
-        calendario.add(Calendar.DAY_OF_MONTH, diasDesdeHoy);
-        SpinnerDateModel modelo = new SpinnerDateModel(calendario.getTime(), null, null, Calendar.DAY_OF_MONTH);
-        JSpinner spinner = new JSpinner(modelo);
-        spinner.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
-        return spinner;
-    }
-
-    private static OffsetDateTime inicioDelDia(Date fecha) {
-        LocalDate local = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return local.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
-    }
-
-    private static OffsetDateTime finDelDia(Date fecha) {
-        LocalDate local = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return local.atTime(LocalTime.of(23, 59, 59)).atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 
     private static final class EstadoListRenderer extends DefaultListCellRenderer {

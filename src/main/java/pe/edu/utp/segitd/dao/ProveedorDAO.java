@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Acceso a datos de proveedor y sus pedidos de reposición (RF-06). */
 public final class ProveedorDAO {
@@ -70,15 +71,16 @@ public final class ProveedorDAO {
 
     public PedidoProveedor crearPedido(PedidoProveedor pedido, Connection conexion) throws SQLException {
         String sql = """
-                INSERT INTO pedido_proveedor (id_proveedor, descripcion, cantidad, estado, id_usuario)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO pedido_proveedor (id_proveedor, codigo_producto, descripcion, cantidad, estado, id_usuario)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, pedido.getIdProveedor());
-            ps.setString(2, pedido.getDescripcion());
-            ps.setInt(3, pedido.getCantidad());
-            ps.setString(4, pedido.getEstado().name());
-            ps.setObject(5, pedido.getIdUsuario());
+            ps.setString(2, pedido.getCodigoProducto());
+            ps.setString(3, pedido.getDescripcion());
+            ps.setInt(4, pedido.getCantidad());
+            ps.setString(5, pedido.getEstado().name());
+            ps.setObject(6, pedido.getIdUsuario());
             ps.executeUpdate();
             try (ResultSet claves = ps.getGeneratedKeys()) {
                 if (claves.next()) {
@@ -89,11 +91,28 @@ public final class ProveedorDAO {
         return pedido;
     }
 
-    public List<PedidoProveedor> listarPedidos(Connection conexion) throws SQLException {
+    public Optional<PedidoProveedor> buscarPedidoPorId(int id, Connection conexion) throws SQLException {
         String sql = """
-                SELECT pp.*, p.nombre_taller
+                SELECT pp.*, p.nombre_taller, pr.nombre AS producto_nombre
                   FROM pedido_proveedor pp
                   JOIN proveedor p ON p.id = pp.id_proveedor
+                  LEFT JOIN producto pr ON pr.codigo = pp.codigo_producto
+                 WHERE pp.id = ?
+                """;
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(mapearPedido(rs)) : Optional.empty();
+            }
+        }
+    }
+
+    public List<PedidoProveedor> listarPedidos(Connection conexion) throws SQLException {
+        String sql = """
+                SELECT pp.*, p.nombre_taller, pr.nombre AS producto_nombre
+                  FROM pedido_proveedor pp
+                  JOIN proveedor p ON p.id = pp.id_proveedor
+                  LEFT JOIN producto pr ON pr.codigo = pp.codigo_producto
                  ORDER BY pp.fecha DESC
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql);
@@ -131,6 +150,8 @@ public final class ProveedorDAO {
         pedido.setId(rs.getInt("id"));
         pedido.setIdProveedor(rs.getInt("id_proveedor"));
         pedido.setNombreTaller(rs.getString("nombre_taller"));
+        pedido.setCodigoProducto(rs.getString("codigo_producto"));
+        pedido.setNombreProducto(rs.getString("producto_nombre"));
         pedido.setDescripcion(rs.getString("descripcion"));
         pedido.setCantidad(rs.getInt("cantidad"));
         pedido.setFecha(rs.getObject("fecha", OffsetDateTime.class));

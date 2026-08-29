@@ -2,6 +2,7 @@ package pe.edu.utp.segitd.dao;
 
 import pe.edu.utp.segitd.modelo.Donacion;
 import pe.edu.utp.segitd.modelo.EstadoDonacion;
+import pe.edu.utp.segitd.modelo.FilaTrazabilidad;
 import pe.edu.utp.segitd.modelo.TipoCompromiso;
 
 import java.sql.Connection;
@@ -150,6 +151,66 @@ public final class DonacionDAO {
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, idVenta);
             ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Trazabilidad para el reporte de impacto (RF-07): una fila por
+     * donación con la venta que la originó y el lote/comunidad que la
+     * entregó. Los filtros son opcionales; sin ellos trae todo el
+     * historial, incluidas las donaciones aún no despachadas.
+     */
+    public List<FilaTrazabilidad> listarTrazabilidad(OffsetDateTime desde, OffsetDateTime hasta, Integer idComunidad,
+                                                       Connection conexion) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
+                SELECT v.codigo_comprobante, v.fecha AS fecha_venta, p.nombre AS producto_nombre,
+                       d.cantidad, d.tipo, d.estado, l.codigo_lote, c.nombre AS comunidad_nombre, l.fecha_despacho
+                  FROM donacion d
+                  JOIN detalle_venta dv ON dv.id = d.id_detalle_venta
+                  JOIN venta v ON v.id = dv.id_venta
+                  JOIN producto p ON p.codigo = d.codigo_producto
+                  LEFT JOIN lote_donacion l ON l.id = d.id_lote
+                  LEFT JOIN comunidad c ON c.id = l.id_comunidad
+                 WHERE 1 = 1
+                """);
+        if (desde != null) {
+            sql.append(" AND l.fecha_despacho >= ?");
+        }
+        if (hasta != null) {
+            sql.append(" AND l.fecha_despacho <= ?");
+        }
+        if (idComunidad != null) {
+            sql.append(" AND l.id_comunidad = ?");
+        }
+        sql.append(" ORDER BY v.fecha DESC");
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
+            int indice = 1;
+            if (desde != null) {
+                ps.setObject(indice++, desde);
+            }
+            if (hasta != null) {
+                ps.setObject(indice++, hasta);
+            }
+            if (idComunidad != null) {
+                ps.setInt(indice++, idComunidad);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                List<FilaTrazabilidad> resultado = new ArrayList<>();
+                while (rs.next()) {
+                    resultado.add(new FilaTrazabilidad(
+                            rs.getString("codigo_comprobante"),
+                            rs.getObject("fecha_venta", OffsetDateTime.class),
+                            rs.getString("producto_nombre"),
+                            rs.getInt("cantidad"),
+                            TipoCompromiso.valueOf(rs.getString("tipo")),
+                            EstadoDonacion.valueOf(rs.getString("estado")),
+                            rs.getString("codigo_lote"),
+                            rs.getString("comunidad_nombre"),
+                            rs.getObject("fecha_despacho", OffsetDateTime.class)));
+                }
+                return resultado;
+            }
         }
     }
 
