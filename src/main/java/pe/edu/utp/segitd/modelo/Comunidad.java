@@ -22,4 +22,9 @@ public class Comunidad {
 
     public String getRegion() { return region; }
     public void setRegion(String region) { this.region = region; }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }

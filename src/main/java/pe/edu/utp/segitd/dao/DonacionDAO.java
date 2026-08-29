@@ -108,16 +108,26 @@ public final class DonacionDAO {
         }
     }
 
-    /** Agrupa las donaciones seleccionadas en un lote (RF-05). */
-    public void asignarALote(List<Integer> idsDonacion, int idLote, Connection conexion) throws SQLException {
-        String sql = "UPDATE donacion SET estado = 'ASIGNADA', id_lote = ? WHERE id = ?";
+    /**
+     * Agrupa las donaciones seleccionadas en un lote (RF-05). Solo afecta
+     * las que sigan PENDIENTE (evita una condición de carrera si dos
+     * usuarios arman un lote con la misma donación a la vez) y devuelve
+     * cuántas se pudieron asignar realmente.
+     */
+    public int asignarALote(List<Integer> idsDonacion, int idLote, Connection conexion) throws SQLException {
+        String sql = "UPDATE donacion SET estado = 'ASIGNADA', id_lote = ? WHERE id = ? AND estado = 'PENDIENTE'";
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             for (Integer idDonacion : idsDonacion) {
                 ps.setInt(1, idLote);
                 ps.setInt(2, idDonacion);
                 ps.addBatch();
             }
-            ps.executeBatch();
+            int[] resultados = ps.executeBatch();
+            int total = 0;
+            for (int resultado : resultados) {
+                total += Math.max(resultado, 0);
+            }
+            return total;
         }
     }
 

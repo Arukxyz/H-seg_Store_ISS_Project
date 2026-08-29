@@ -18,4 +18,9 @@ public class Ong {
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
