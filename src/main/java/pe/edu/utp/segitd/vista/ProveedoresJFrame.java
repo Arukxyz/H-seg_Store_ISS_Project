@@ -7,6 +7,7 @@ import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.Proveedor;
 import pe.edu.utp.segitd.servicio.ServicioException;
 
+<<<<<<< HEAD
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -14,6 +15,31 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+=======
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.table.AbstractTableModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -46,6 +72,7 @@ public class ProveedoresJFrame extends JFrame {
     private final JButton botonRecibido = new JButton("Marcar recibido");
     private final JButton botonAnularPedido = new JButton("Anular pedido");
 
+<<<<<<< HEAD
     // COLORES (mismo sistema que GestionProductosJFrame)
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3);
     private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);
@@ -65,6 +92,13 @@ public class ProveedoresJFrame extends JFrame {
         panelRaiz.setBackground(COLOR_FONDO_VENTANA);
         setContentPane(panelRaiz);
         setMinimumSize(new Dimension(1020, 620));
+=======
+    public ProveedoresJFrame() {
+        super("SEGITD-HÖSÉG · Proveedores");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(construirContenido());
+        setMinimumSize(new Dimension(980, 600));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pack();
         setLocationRelativeTo(null);
         cargarProveedores();
@@ -73,6 +107,7 @@ public class ProveedoresJFrame extends JFrame {
     }
 
     private JPanel construirContenido() {
+<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -93,6 +128,11 @@ public class ProveedoresJFrame extends JFrame {
         JTabbedPane pestanas = new JTabbedPane();
         pestanas.setFont(new Font("SansSerif", Font.BOLD, 13));
         pestanas.setBackground(COLOR_FONDO_VENTANA);
+=======
+        JPanel raiz = new JPanel(new BorderLayout());
+        raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        JTabbedPane pestanas = new JTabbedPane();
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pestanas.addTab("Proveedores", construirTabProveedores());
         pestanas.addTab("Pedidos de reposición", construirTabPedidos());
         raiz.add(pestanas, BorderLayout.CENTER);
@@ -102,6 +142,7 @@ public class ProveedoresJFrame extends JFrame {
     // ---------- Proveedores ----------
 
     private JPanel construirTabProveedores() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(16, 16));
         panel.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -113,11 +154,18 @@ public class ProveedoresJFrame extends JFrame {
 
     private JPanel construirPanelTablaProveedores() {
         estilizarTabla(tablaProveedores);
+=======
+        JPanel panel = new JPanel(new BorderLayout(12, 12));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+        tablaProveedores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaProveedores.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tablaProveedores.getSelectedRow() >= 0) {
                 cargarFormularioProveedor(modeloProveedores.obtener(tablaProveedores.convertRowIndexToModel(tablaProveedores.getSelectedRow())));
             }
         });
+<<<<<<< HEAD
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -150,23 +198,70 @@ public class ProveedoresJFrame extends JFrame {
 
         JPanel panelBotones = new JPanel(new GridLayout(1, 3, 10, 0));
         panelBotones.setBackground(Color.WHITE);
+=======
+        panel.add(new JScrollPane(tablaProveedores), BorderLayout.CENTER);
+
+        JPanel panelFormulario = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+
+        gbc.gridy = 0;
+        panelFormulario.add(new JLabel("Nombre del taller:"), gbc);
+        gbc.gridx = 1;
+        panelFormulario.add(txtNombreTaller, gbc);
+
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        panelFormulario.add(new JLabel("RUC:"), gbc);
+        gbc.gridx = 1;
+        panelFormulario.add(txtRuc, gbc);
+
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        panelFormulario.add(new JLabel("Contacto:"), gbc);
+        gbc.gridx = 1;
+        panelFormulario.add(txtContacto, gbc);
+
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        panelFormulario.add(new JLabel("Teléfono:"), gbc);
+        gbc.gridx = 1;
+        panelFormulario.add(txtTelefono, gbc);
+
+        JPanel panelBotones = new JPanel(new GridLayout(1, 3, 8, 0));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         JButton botonNuevo = new JButton("Nuevo");
         botonNuevo.addActionListener(e -> limpiarFormularioProveedor());
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarProveedor());
         JButton botonBaja = new JButton("Dar de baja");
         botonBaja.addActionListener(e -> darDeBajaProveedor());
+<<<<<<< HEAD
 
         estilizarBotonSecundario(botonNuevo, COLOR_PRIMARIO);
         estilizarBotonPrincipal(botonGuardar, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
         estilizarBotonSecundario(botonBaja, COLOR_BURDEO);
 
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonBaja);
 
+<<<<<<< HEAD
         tarjeta.add(panelBotones, BorderLayout.SOUTH);
         return tarjeta;
+=======
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panelFormulario.add(panelBotones, gbc);
+
+        panel.add(panelFormulario, BorderLayout.SOUTH);
+        return panel;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarProveedores() {
@@ -241,6 +336,7 @@ public class ProveedoresJFrame extends JFrame {
     // ---------- Pedidos ----------
 
     private JPanel construirTabPedidos() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(16, 16));
         panel.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -249,18 +345,30 @@ public class ProveedoresJFrame extends JFrame {
         split.setResizeWeight(0.6);
         split.setBorder(null);
         split.setBackground(COLOR_FONDO_VENTANA);
+=======
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelListaPedidos(), construirPanelNuevoPedido());
+        split.setResizeWeight(0.65);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(split, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirPanelListaPedidos() {
+<<<<<<< HEAD
         estilizarTabla(tablaPedidos);
+=======
+        tablaPedidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaPedidos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 actualizarBotonesPedido();
             }
         });
 
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setBackground(COLOR_FONDO_VENTANA);
         panel.setBorder(construirBordeTitulado("Pedidos"));
@@ -275,6 +383,15 @@ public class ProveedoresJFrame extends JFrame {
         botonAnularPedido.setEnabled(false);
         estilizarBotonPrincipal(botonRecibido, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
         estilizarBotonSecundario(botonAnularPedido, COLOR_BURDEO);
+=======
+        JPanel panel = new JPanel(new BorderLayout(0, 8));
+        panel.setBorder(BorderFactory.createTitledBorder("Pedidos"));
+        panel.add(new JScrollPane(tablaPedidos), BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        botonRecibido.setEnabled(false);
+        botonAnularPedido.setEnabled(false);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         botonRecibido.addActionListener(e -> marcarRecibido());
         botonAnularPedido.addActionListener(e -> anularPedido());
         panelBotones.add(botonRecibido);
@@ -283,6 +400,7 @@ public class ProveedoresJFrame extends JFrame {
         return panel;
     }
 
+<<<<<<< HEAD
     private JPanel construirTarjetaNuevoPedido() {
         JPanel tarjeta = new JPanel(new BorderLayout());
         tarjeta.setBackground(Color.WHITE);
@@ -321,6 +439,47 @@ public class ProveedoresJFrame extends JFrame {
 
         tarjeta.add(panel, BorderLayout.CENTER);
         return tarjeta;
+=======
+    private JPanel construirPanelNuevoPedido() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Nuevo pedido"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+
+        gbc.gridy = 0;
+        panel.add(new JLabel("Proveedor:"), gbc);
+        gbc.gridx = 1;
+        panel.add(comboProveedorPedido, gbc);
+
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Producto a reponer:"), gbc);
+        gbc.gridx = 1;
+        panel.add(comboProductoPedido, gbc);
+
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Descripción:"), gbc);
+        gbc.gridx = 1;
+        panel.add(txtDescripcionPedido, gbc);
+
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Cantidad:"), gbc);
+        gbc.gridx = 1;
+        panel.add(spinnerCantidadPedido, gbc);
+
+        JButton botonRegistrar = new JButton("Registrar pedido");
+        botonRegistrar.addActionListener(e -> registrarPedido());
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panel.add(botonRegistrar, gbc);
+
+        return panel;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarProductosCombo() {
@@ -413,6 +572,7 @@ public class ProveedoresJFrame extends JFrame {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
+<<<<<<< HEAD
     // ---------- helpers de estilo ----------
 
     private void agregarCampo(JPanel panel, GridBagConstraints gbc, int fila, String etiqueta, JComponent campo) {
@@ -525,6 +685,8 @@ public class ProveedoresJFrame extends JFrame {
 
     // ---------- modelos de tabla ----------
 
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private static final class ModeloProveedores extends AbstractTableModel {
         private final String[] columnas = {"Taller", "RUC", "Contacto", "Teléfono"};
         private List<Proveedor> proveedores = List.of();
@@ -608,6 +770,7 @@ public class ProveedoresJFrame extends JFrame {
             };
         }
     }
+<<<<<<< HEAD
 
     private static class FranjaDecorativaHoseg extends JComponent {
         public FranjaDecorativaHoseg() {
@@ -633,3 +796,6 @@ public class ProveedoresJFrame extends JFrame {
         }
     }
 }
+=======
+}
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987

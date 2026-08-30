@@ -7,12 +7,28 @@ import pe.edu.utp.segitd.servicio.BackupService;
 import pe.edu.utp.segitd.servicio.IndicadoresDashboard;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
+<<<<<<< HEAD
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+=======
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.nio.file.Path;
@@ -33,6 +49,7 @@ public class MenuPrincipalJFrame extends JFrame {
     private final JLabel valorDonacionesPendientes = new JLabel("-");
     private final JLabel valorLotesEnRuta = new JLabel("-");
 
+<<<<<<< HEAD
     // CONSTANTES DE DISEÑO 
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema neutro muy suave
     private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);      // Verde Sea Pine 
@@ -66,11 +83,26 @@ public class MenuPrincipalJFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 cerrarAplicacion(); //
+=======
+    public MenuPrincipalJFrame() {
+        super("SEGITD-HÖSÉG · Panel principal");
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setContentPane(construirContenido());
+        setMinimumSize(new Dimension(760, 480));
+        pack();
+        setLocationRelativeTo(null);
+        actualizarPanel();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                cerrarAplicacion();
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
             }
         });
     }
 
     private JPanel construirContenido() {
+<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -85,6 +117,11 @@ public class MenuPrincipalJFrame extends JFrame {
         contenedorNorte.add(new FranjaDecorativaHoseg());
         
         raiz.add(contenedorNorte, BorderLayout.NORTH);
+=======
+        JPanel raiz = new JPanel(new BorderLayout(12, 12));
+        raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        raiz.add(construirEncabezado(), BorderLayout.NORTH);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         raiz.add(construirIndicadores(), BorderLayout.CENTER);
         raiz.add(construirModulos(), BorderLayout.SOUTH);
         return raiz;
@@ -94,6 +131,7 @@ public class MenuPrincipalJFrame extends JFrame {
         Usuario usuario = SesionUsuario.obtenerInstancia().getUsuarioActual();
 
         JPanel encabezado = new JPanel(new BorderLayout());
+<<<<<<< HEAD
         encabezado.setBackground(COLOR_FONDO_VENTANA);
 
         //titulo izq
@@ -132,13 +170,39 @@ public class MenuPrincipalJFrame extends JFrame {
         derecha.add(botonCerrarSesion);
 
         encabezado.add(derecha, BorderLayout.EAST);
+=======
+
+        JLabel titulo = new JLabel("Höség Store — Back office");
+        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 18f));
+        encabezado.add(titulo, BorderLayout.WEST);
+
+        JPanel derecha = new JPanel();
+        derecha.add(indicadorConexion);
+        derecha.add(new JLabel(usuario.getNombre() + " (" + usuario.getRol() + ")"));
+        JButton botonActualizar = new JButton("Actualizar");
+        botonActualizar.addActionListener(e -> actualizarPanel());
+        derecha.add(botonActualizar);
+        JButton botonRespaldar = new JButton("Respaldar ahora");
+        botonRespaldar.setEnabled(usuario.getRol() == RolUsuario.ADMINISTRADOR);
+        botonRespaldar.addActionListener(e -> respaldarAhora());
+        derecha.add(botonRespaldar);
+        JButton botonCerrarSesion = new JButton("Cerrar sesión");
+        botonCerrarSesion.addActionListener(e -> cerrarSesion());
+        derecha.add(botonCerrarSesion);
+        encabezado.add(derecha, BorderLayout.EAST);
+
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return encabezado;
     }
 
     private JPanel construirIndicadores() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new GridLayout(1, 5, 14, 14));
         panel.setBackground(COLOR_FONDO_VENTANA);
         
+=======
+        JPanel panel = new JPanel(new GridLayout(1, 5, 12, 12));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(tarjeta("Productos activos", valorProductosActivos));
         panel.add(tarjeta("Bajo stock mínimo", valorBajoStock));
         panel.add(tarjeta("Pedidos web pendientes", valorPedidosPendientes));
@@ -148,6 +212,7 @@ public class MenuPrincipalJFrame extends JFrame {
     }
 
     private JPanel tarjeta(String etiqueta, JLabel valor) {
+<<<<<<< HEAD
         JPanel tarjeta = new JPanel(new BorderLayout(8, 8));
         tarjeta.setBackground(Color.WHITE); 
         
@@ -163,15 +228,29 @@ public class MenuPrincipalJFrame extends JFrame {
         descripcion.setFont(new Font("SansSerif", Font.PLAIN, 13));
         descripcion.setForeground(COLOR_GRIS_TEXTO);
         
+=======
+        JPanel tarjeta = new JPanel(new BorderLayout(4, 4));
+        tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0xDD, 0xDD, 0xDD)),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        valor.setFont(valor.getFont().deriveFont(Font.BOLD, 28f));
+        valor.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel descripcion = new JLabel(etiqueta, SwingConstants.CENTER);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tarjeta.add(valor, BorderLayout.CENTER);
         tarjeta.add(descripcion, BorderLayout.SOUTH);
         return tarjeta;
     }
 
     private JPanel construirModulos() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new GridLayout(2, 3, 14, 14));
         panel.setBackground(COLOR_FONDO_VENTANA);
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+=======
+        JPanel panel = new JPanel(new GridLayout(2, 3, 12, 12));
+        panel.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 
         Usuario usuario = SesionUsuario.obtenerInstancia().getUsuarioActual();
         boolean esAdministrador = usuario.getRol() == RolUsuario.ADMINISTRADOR;
@@ -188,6 +267,7 @@ public class MenuPrincipalJFrame extends JFrame {
 
     private JButton botonModulo(String texto, boolean habilitado, Runnable accion) {
         JButton boton = new JButton(texto);
+<<<<<<< HEAD
         boton.setEnabled(habilitado); //
         boton.setFont(FUENTE_BOTONES);
         boton.setFocusPainted(false);
@@ -255,6 +335,17 @@ public class MenuPrincipalJFrame extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {
                 if (boton.isEnabled()) boton.setBackground(base);
+=======
+        boton.setEnabled(habilitado);
+        // TODO: los módulos con accion == null se implementan en los pasos 7 a 10.
+        boton.addActionListener(e -> {
+            if (accion != null) {
+                accion.run();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Módulo \"" + texto + "\" pendiente de implementación.",
+                        "En construcción", JOptionPane.INFORMATION_MESSAGE);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
             }
         });
         return boton;
@@ -321,6 +412,7 @@ public class MenuPrincipalJFrame extends JFrame {
         dispose();
         System.exit(0);
     }
+<<<<<<< HEAD
 
 
     //FRANJA
@@ -354,4 +446,6 @@ public class MenuPrincipalJFrame extends JFrame {
         }
     }
 
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 }

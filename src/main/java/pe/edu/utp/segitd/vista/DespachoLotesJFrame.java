@@ -20,6 +20,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+<<<<<<< HEAD
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -39,6 +40,12 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+=======
+import javax.swing.table.AbstractTableModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -67,6 +74,7 @@ public class DespachoLotesJFrame extends JFrame {
     private final JButton botonEnRuta = new JButton("Marcar en ruta");
     private final JButton botonEntregado = new JButton("Marcar entregado");
 
+<<<<<<< HEAD
     
     //colores
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema suave
@@ -92,6 +100,14 @@ public class DespachoLotesJFrame extends JFrame {
         setMinimumSize(new Dimension(980, 560));
         pack();
         setSize(1020, 610);
+=======
+    public DespachoLotesJFrame() {
+        super("SEGITD-HÖSÉG · Despacho de lotes");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(construirContenido());
+        setMinimumSize(new Dimension(980, 620));
+        pack();
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         setLocationRelativeTo(null);
         cargarSelectores();
         cargarDonacionesPendientes();
@@ -101,6 +117,7 @@ public class DespachoLotesJFrame extends JFrame {
     private JPanel construirContenido() {
         JPanel raiz = new JPanel(new BorderLayout());
         raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+<<<<<<< HEAD
         raiz.setBackground(COLOR_FONDO_VENTANA);
 
         JTabbedPane pestanas = new JTabbedPane();
@@ -108,6 +125,10 @@ public class DespachoLotesJFrame extends JFrame {
         pestanas.setBackground(Color.WHITE);
         pestanas.setForeground(COLOR_PRIMARIO);
 
+=======
+
+        JTabbedPane pestanas = new JTabbedPane();
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pestanas.addTab("Nuevo lote", construirTabNuevoLote());
         pestanas.addTab("Lotes", construirTabLotes());
         raiz.add(pestanas, BorderLayout.CENTER);
@@ -115,6 +136,7 @@ public class DespachoLotesJFrame extends JFrame {
     }
 
     private JPanel construirTabNuevoLote() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(12, 12));
         panel.setBorder(BorderFactory.createEmptyBorder(16, 12, 12, 12));
         panel.setBackground(Color.WHITE);
@@ -146,10 +168,27 @@ public class DespachoLotesJFrame extends JFrame {
         JScrollPane scroll = new JScrollPane(tablaDonacionesPendientes);
         scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
         panel.add(scroll, BorderLayout.CENTER);
+=======
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+        JPanel panelSelectores = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        panelSelectores.add(new JLabel("Comunidad:"));
+        panelSelectores.add(comboComunidad);
+        panelSelectores.add(new JLabel("ONG:"));
+        panelSelectores.add(comboOng);
+        JButton botonCrear = new JButton("Crear lote con las seleccionadas");
+        botonCrear.addActionListener(e -> crearLote());
+        panelSelectores.add(botonCrear);
+        panel.add(panelSelectores, BorderLayout.NORTH);
+
+        panel.add(new JScrollPane(tablaDonacionesPendientes), BorderLayout.CENTER);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirTabLotes() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(12, 12));
         panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -164,18 +203,29 @@ public class DespachoLotesJFrame extends JFrame {
             ((javax.swing.plaf.basic.BasicSplitPaneUI) split.getUI()).getDivider().setBorder(null);
         }
         
+=======
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelListaLotes(), construirPanelDetalleLote());
+        split.setResizeWeight(0.5);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(split, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirPanelListaLotes() {
+<<<<<<< HEAD
         estilizarTablaElegante(tablaLotes);
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaLotes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaLotes.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarDetalleLote();
             }
         });
+<<<<<<< HEAD
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -191,10 +241,16 @@ public class DespachoLotesJFrame extends JFrame {
         JScrollPane scroll = new JScrollPane(tablaLotes);
         scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
         panel.add(scroll, BorderLayout.CENTER);
+=======
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Lotes"));
+        panel.add(new JScrollPane(tablaLotes), BorderLayout.CENTER);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirPanelDetalleLote() {
+<<<<<<< HEAD
         estilizarTablaElegante(tablaDonacionesLote);
         
         JPanel panel = new JPanel(new BorderLayout(0, 10));
@@ -224,6 +280,17 @@ public class DespachoLotesJFrame extends JFrame {
         botonEnRuta.addActionListener(e -> marcarEnRuta());
         botonEntregado.addActionListener(e -> marcarEntregado());
         
+=======
+        JPanel panel = new JPanel(new BorderLayout(0, 8));
+        panel.setBorder(BorderFactory.createTitledBorder("Donaciones del lote"));
+        panel.add(new JScrollPane(tablaDonacionesLote), BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        botonEnRuta.setEnabled(false);
+        botonEntregado.setEnabled(false);
+        botonEnRuta.addActionListener(e -> marcarEnRuta());
+        botonEntregado.addActionListener(e -> marcarEntregado());
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panelBotones.add(botonEnRuta);
         panelBotones.add(botonEntregado);
         panel.add(panelBotones, BorderLayout.SOUTH);
@@ -491,6 +558,7 @@ public class DespachoLotesJFrame extends JFrame {
             };
         }
     }
+<<<<<<< HEAD
 
     //metodos extras
         private void estilizarTablaElegante(JTable t) {
@@ -551,4 +619,6 @@ public class DespachoLotesJFrame extends JFrame {
         });
     }
 
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 }

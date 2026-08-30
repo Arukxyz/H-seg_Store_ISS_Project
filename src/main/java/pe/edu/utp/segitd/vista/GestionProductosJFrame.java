@@ -8,6 +8,7 @@ import pe.edu.utp.segitd.modelo.TipoStock;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
 
+<<<<<<< HEAD
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -19,6 +20,33 @@ import java.awt.event.MouseEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+=======
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -59,6 +87,7 @@ public class GestionProductosJFrame extends JFrame {
 
     private String codigoEnEdicion;
 
+<<<<<<< HEAD
      // COLORES
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema suave
     private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);      // Verde Sea Pine
@@ -81,6 +110,13 @@ public class GestionProductosJFrame extends JFrame {
         setContentPane(panelRaiz);
 
         setMinimumSize(new Dimension(1050, 500));
+=======
+    public GestionProductosJFrame() {
+        super("SEGITD-HÖSÉG · Gestión de productos");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setContentPane(construirContenido());
+        setMinimumSize(new Dimension(920, 560));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         aplicarControlAcceso();
         pack();
         setLocationRelativeTo(null);
@@ -89,6 +125,7 @@ public class GestionProductosJFrame extends JFrame {
     }
 
     private JPanel construirContenido() {
+<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -117,12 +154,20 @@ public class GestionProductosJFrame extends JFrame {
             ((javax.swing.plaf.basic.BasicSplitPaneUI) splitPane.getUI()).getDivider().setBorder(null);
         }
 
+=======
+        JPanel raiz = new JPanel(new BorderLayout(12, 12));
+        raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, construirPanelTabla(), construirPanelFormulario());
+        splitPane.setResizeWeight(0.6);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         raiz.add(splitPane, BorderLayout.CENTER);
         return raiz;
     }
 
     private JPanel construirPanelTabla() {
         tabla.setDefaultRenderer(Object.class, new ResaltadoStockBajoRenderer());
+<<<<<<< HEAD
         tabla.setRowHeight(28);
         //aqui afecta¿
         tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -140,12 +185,17 @@ public class GestionProductosJFrame extends JFrame {
         header.setPreferredSize(new Dimension(header.getWidth(), 32));
         ((DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
 
+=======
+        tabla.setRowHeight(22);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tabla.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tabla.getSelectedRow() >= 0) {
                 cargarFormulario(modeloTabla.obtener(tabla.convertRowIndexToModel(tabla.getSelectedRow())));
             }
         });
 
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setBackground(COLOR_FONDO_VENTANA);
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
@@ -159,10 +209,18 @@ public class GestionProductosJFrame extends JFrame {
         leyenda.setForeground(COLOR_BURDEO);
         panel.add(leyenda, BorderLayout.SOUTH);
 
+=======
+        JPanel panel = new JPanel(new BorderLayout(0, 8));
+        panel.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        JLabel leyenda = new JLabel("Las filas en rojo tienen el stock comercial en el mínimo o por debajo.");
+        leyenda.setForeground(Color.GRAY);
+        panel.add(leyenda, BorderLayout.SOUTH);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirPanelFormulario() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(0, 16));
         panel.setBackground(Color.WHITE);  
         panel.setBorder(BorderFactory.createCompoundBorder(
@@ -175,17 +233,28 @@ public class GestionProductosJFrame extends JFrame {
         scrollForm.getVerticalScrollBar().setUnitIncrement(16);
         
         panel.add(scrollForm, BorderLayout.CENTER);
+=======
+        JPanel panel = new JPanel(new BorderLayout(0, 12));
+        panel.add(construirFormulario(), BorderLayout.CENTER);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(construirBotones(), BorderLayout.SOUTH);
         return panel;
     }
 
     private JPanel construirFormulario() {
         JPanel panel = new JPanel(new GridBagLayout());
+<<<<<<< HEAD
         panel.setBackground(Color.WHITE); 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 6, 3, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
+=======
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 
         int fila = 0;
         agregarCampo(panel, gbc, fila++, "Código:", txtCodigo);
@@ -200,6 +269,7 @@ public class GestionProductosJFrame extends JFrame {
         agregarCampo(panel, gbc, fila++, "Stock comercial inicial:", spinnerStockComercial);
         agregarCampo(panel, gbc, fila++, "Stock mínimo:", spinnerStockMinimo);
 
+<<<<<<< HEAD
         checkAplicaTripleImpacto.setFont(FUENTE_LABEL);
         checkAplicaTripleImpacto.setBackground(Color.WHITE);
         checkAplicaTripleImpacto.setForeground(COLOR_TEXTO_MAIN);
@@ -218,13 +288,25 @@ public class GestionProductosJFrame extends JFrame {
         comboTipoCompromiso.setBackground(Color.WHITE);
 
         comboTipoCompromiso.setBorder(BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1));
+=======
+        gbc.gridy = fila++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panel.add(checkAplicaTripleImpacto, gbc);
+
+        gbc.gridy = fila++;
+        panel.add(new JLabel("Tipo de compromiso:"), gbc);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         gbc.gridy = fila++;
         gbc.gridwidth = 2;
         panel.add(comboTipoCompromiso, gbc);
 
+<<<<<<< HEAD
         checkVisibleWeb.setFont(FUENTE_LABEL);
         checkVisibleWeb.setBackground(Color.WHITE);
         checkVisibleWeb.setForeground(COLOR_TEXTO_MAIN);
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         gbc.gridy = fila;
         panel.add(checkVisibleWeb, gbc);
 
@@ -235,6 +317,7 @@ public class GestionProductosJFrame extends JFrame {
         gbc.gridy = fila;
         gbc.gridx = 0;
         gbc.gridwidth = 1;
+<<<<<<< HEAD
         gbc.weightx = 0.3; 
 
         JLabel label = new JLabel(etiqueta);
@@ -251,10 +334,15 @@ public class GestionProductosJFrame extends JFrame {
             estilizarComponenteForm((JComponent) ((JSpinner) campo).getEditor());
             campo.setBackground(Color.WHITE);
         }
+=======
+        panel.add(new JLabel(etiqueta), gbc);
+        gbc.gridx = 1;
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(campo, gbc);
     }
 
     private JPanel construirBotones() {
+<<<<<<< HEAD
         JPanel panel = new JPanel(new GridLayout(1, 4, 10, 0));
         panel.setBackground(Color.WHITE);
         
@@ -263,11 +351,17 @@ public class GestionProductosJFrame extends JFrame {
         estilizarBotonSecundario(botonEliminar, COLOR_BURDEO); 
         estilizarBotonSecundario(botonAjustarStock, COLOR_PRIMARIO);
 
+=======
+        JPanel panel = new JPanel(new GridLayout(1, 4, 8, 0));
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         botonNuevo.addActionListener(e -> limpiarFormulario());
         botonGuardar.addActionListener(e -> guardar());
         botonEliminar.addActionListener(e -> eliminar());
         botonAjustarStock.addActionListener(e -> mostrarDialogoAjusteStock());
+<<<<<<< HEAD
         
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(botonNuevo);
         panel.add(botonGuardar);
         panel.add(botonEliminar);
@@ -279,6 +373,7 @@ public class GestionProductosJFrame extends JFrame {
         if (esAdministrador) {
             return;
         }
+<<<<<<< HEAD
 
         Color grisDeshabilitado = new Color(0xE0, 0xE0, 0xE0);
         Color textoDeshabilitado = new Color(0x9E, 0x9E, 0x9E);
@@ -290,6 +385,12 @@ public class GestionProductosJFrame extends JFrame {
             b.setForeground(textoDeshabilitado);
             b.setBorder(BorderFactory.createLineBorder(new Color(0xBD, 0xBD, 0xBD), 1));
         }
+=======
+        botonNuevo.setEnabled(false);
+        botonGuardar.setEnabled(false);
+        botonEliminar.setEnabled(false);
+        botonAjustarStock.setEnabled(false);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarProductos() {
@@ -300,6 +401,7 @@ public class GestionProductosJFrame extends JFrame {
         }
     }
 
+<<<<<<< HEAD
     //metodos estilos
         private void estilizarComponenteForm(JComponent comp) {
         comp.setFont(FUENTE_INPUT);
@@ -359,6 +461,8 @@ public class GestionProductosJFrame extends JFrame {
         });
     }
 
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private void cargarFormulario(Producto p) {
         codigoEnEdicion = p.getCodigo();
         txtCodigo.setText(p.getCodigo());
@@ -489,6 +593,7 @@ public class GestionProductosJFrame extends JFrame {
         JSpinner spinnerCantidad = new JSpinner(new SpinnerNumberModel(0, -100_000, 100_000, 1));
         JTextField txtMotivo = new JTextField(20);
 
+<<<<<<< HEAD
         comboTipo.setFont(FUENTE_INPUT);
         comboTipo.setBackground(Color.WHITE);
         comboTipo.setBorder(BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1));
@@ -518,6 +623,16 @@ public class GestionProductosJFrame extends JFrame {
             panel.add(lbl);
             panel.add(componentes[i]);
         }
+=======
+        JPanel panel = new JPanel(new GridLayout(0, 1, 4, 4));
+        panel.add(new JLabel("Producto: " + producto.getNombre()));
+        panel.add(new JLabel("Tipo de stock:"));
+        panel.add(comboTipo);
+        panel.add(new JLabel("Cantidad (negativo para descontar):"));
+        panel.add(spinnerCantidad);
+        panel.add(new JLabel("Motivo:"));
+        panel.add(txtMotivo);
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 
         int resultado = JOptionPane.showConfirmDialog(this, panel, "Ajuste manual de stock",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -549,7 +664,10 @@ public class GestionProductosJFrame extends JFrame {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
+<<<<<<< HEAD
     //
+=======
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private final class ModeloTablaProductos extends AbstractTableModel {
         private final String[] columnas = {
                 "Código", "Nombre", "Categoría", "Talla", "Precio",
@@ -604,6 +722,7 @@ public class GestionProductosJFrame extends JFrame {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                          boolean hasFocus, int row, int column) {
             Component componente = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+<<<<<<< HEAD
             
             Producto producto = modeloTabla.obtener(table.convertRowIndexToModel(row));
             boolean esBajoStock = producto.getStockComercial() <= producto.getStockMinimo();
@@ -653,4 +772,14 @@ public class GestionProductosJFrame extends JFrame {
     }
 
 
+=======
+            if (!isSelected) {
+                Producto producto = modeloTabla.obtener(table.convertRowIndexToModel(row));
+                componente.setBackground(
+                        producto.getStockComercial() <= producto.getStockMinimo() ? new Color(0xFF, 0xEB, 0xEE) : Color.WHITE);
+            }
+            return componente;
+        }
+    }
+>>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 }
