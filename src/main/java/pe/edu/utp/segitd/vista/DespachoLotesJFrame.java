@@ -20,10 +20,25 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.LinearGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -52,12 +67,31 @@ public class DespachoLotesJFrame extends JFrame {
     private final JButton botonEnRuta = new JButton("Marcar en ruta");
     private final JButton botonEntregado = new JButton("Marcar entregado");
 
+    
+    //colores
+    private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema suave
+    private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);      // Verde Sea Pine
+    private final Color COLOR_PRIMARIO_HOVER = new Color(0x3D, 0x4E, 0x45);
+    private final Color COLOR_BURDEO = new Color(0x8C, 0x2D, 0x19);       // Terracota
+    private final Color COLOR_BURDEO_HOVER = new Color(0xA6, 0x3A, 0x24);
+    private final Color COLOR_GRIS_TEXTO = new Color(0x55, 0x55, 0x55);
+    private final Color COLOR_TEXTO_MAIN = new Color(0x1A, 0x1A, 0x1A);
+
+    private final Font FUENTE_LABEL = new Font("SansSerif", Font.BOLD, 12);
+    private final Font FUENTE_INPUT = new Font("SansSerif", Font.PLAIN, 13);
+    private final Font FUENTE_PANEL_TITULO = new Font("SansSerif", Font.BOLD, 14);
+
+
     public DespachoLotesJFrame() {
         super("SEGITD-HÖSÉG · Despacho de lotes");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setContentPane(construirContenido());
-        setMinimumSize(new Dimension(980, 620));
+        JPanel panelRaiz = construirContenido();
+        panelRaiz.setBackground(COLOR_FONDO_VENTANA);
+        setContentPane(panelRaiz);
+        setPreferredSize(new Dimension(1020, 610));
+        setMinimumSize(new Dimension(980, 560));
         pack();
+        setSize(1020, 610);
         setLocationRelativeTo(null);
         cargarSelectores();
         cargarDonacionesPendientes();
@@ -67,8 +101,13 @@ public class DespachoLotesJFrame extends JFrame {
     private JPanel construirContenido() {
         JPanel raiz = new JPanel(new BorderLayout());
         raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        raiz.setBackground(COLOR_FONDO_VENTANA);
 
         JTabbedPane pestanas = new JTabbedPane();
+        pestanas.setFont(FUENTE_LABEL);
+        pestanas.setBackground(Color.WHITE);
+        pestanas.setForeground(COLOR_PRIMARIO);
+
         pestanas.addTab("Nuevo lote", construirTabNuevoLote());
         pestanas.addTab("Lotes", construirTabLotes());
         raiz.add(pestanas, BorderLayout.CENTER);
@@ -76,56 +115,115 @@ public class DespachoLotesJFrame extends JFrame {
     }
 
     private JPanel construirTabNuevoLote() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+        JPanel panel = new JPanel(new BorderLayout(12, 12));
+        panel.setBorder(BorderFactory.createEmptyBorder(16, 12, 12, 12));
+        panel.setBackground(Color.WHITE);
 
-        JPanel panelSelectores = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        panelSelectores.add(new JLabel("Comunidad:"));
+        JPanel panelSelectores = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
+        panelSelectores.setBackground(Color.WHITE);
+
+        comboComunidad.setFont(FUENTE_INPUT); comboComunidad.setBackground(Color.WHITE);
+        comboComunidad.setBorder(BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1));
+        comboOng.setFont(FUENTE_INPUT); comboOng.setBackground(Color.WHITE);
+        comboOng.setBorder(BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1));
+
+        JLabel lblCom = new JLabel("Comunidad:"); lblCom.setFont(FUENTE_LABEL); lblCom.setForeground(COLOR_GRIS_TEXTO);
+        JLabel lblOng = new JLabel("ONG:"); lblOng.setFont(FUENTE_LABEL); lblOng.setForeground(COLOR_GRIS_TEXTO);
+
+        panelSelectores.add(lblCom);
         panelSelectores.add(comboComunidad);
-        panelSelectores.add(new JLabel("ONG:"));
+        panelSelectores.add(lblOng);
         panelSelectores.add(comboOng);
+
         JButton botonCrear = new JButton("Crear lote con las seleccionadas");
+        estilizarBotonPrincipal(botonCrear, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
         botonCrear.addActionListener(e -> crearLote());
         panelSelectores.add(botonCrear);
+        
         panel.add(panelSelectores, BorderLayout.NORTH);
-
-        panel.add(new JScrollPane(tablaDonacionesPendientes), BorderLayout.CENTER);
+        
+        estilizarTablaElegante(tablaDonacionesPendientes);
+        JScrollPane scroll = new JScrollPane(tablaDonacionesPendientes);
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
+        panel.add(scroll, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirTabLotes() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-
+        JPanel panel = new JPanel(new BorderLayout(12, 12));
+        panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        panel.setBackground(COLOR_FONDO_VENTANA);
+        
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelListaLotes(), construirPanelDetalleLote());
         split.setResizeWeight(0.5);
+        split.setDividerLocation(180); // Ajuste matemático del alto de tabla
+        split.setBorder(null);
+        split.setBackground(COLOR_FONDO_VENTANA);
+        
+        if (split.getUI() instanceof javax.swing.plaf.basic.BasicSplitPaneUI) {
+            ((javax.swing.plaf.basic.BasicSplitPaneUI) split.getUI()).getDivider().setBorder(null);
+        }
+        
         panel.add(split, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirPanelListaLotes() {
+        estilizarTablaElegante(tablaLotes);
         tablaLotes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaLotes.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarDetalleLote();
             }
         });
+        
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Lotes"));
-        panel.add(new JScrollPane(tablaLotes), BorderLayout.CENTER);
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0xE2, 0xE2, 0xE0), 1),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        
+        JLabel lblTit = new JLabel("Historial de Lotes Generados");
+        lblTit.setFont(FUENTE_PANEL_TITULO); lblTit.setForeground(COLOR_TEXTO_MAIN);
+        lblTit.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+        panel.add(lblTit, BorderLayout.NORTH);
+        
+        JScrollPane scroll = new JScrollPane(tablaLotes);
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
+        panel.add(scroll, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirPanelDetalleLote() {
-        JPanel panel = new JPanel(new BorderLayout(0, 8));
-        panel.setBorder(BorderFactory.createTitledBorder("Donaciones del lote"));
-        panel.add(new JScrollPane(tablaDonacionesLote), BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        estilizarTablaElegante(tablaDonacionesLote);
+        
+        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0xE2, 0xE2, 0xE0), 1),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        
+        JLabel lblTit = new JLabel("Donaciones Incluidas en el Lote");
+        lblTit.setFont(FUENTE_PANEL_TITULO); lblTit.setForeground(COLOR_TEXTO_MAIN);
+        lblTit.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+        panel.add(lblTit, BorderLayout.NORTH);
+        
+        JScrollPane scroll = new JScrollPane(tablaDonacionesLote);
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
+        panel.add(scroll, BorderLayout.CENTER);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 4));
+        panelBotones.setBackground(Color.WHITE);
+        
         botonEnRuta.setEnabled(false);
         botonEntregado.setEnabled(false);
+        
+        estilizarBotonSecundario(botonEnRuta, COLOR_PRIMARIO);
+        estilizarBotonPrincipal(botonEntregado, COLOR_BURDEO, COLOR_BURDEO_HOVER); // Entregado resalta en terracota
+        
         botonEnRuta.addActionListener(e -> marcarEnRuta());
         botonEntregado.addActionListener(e -> marcarEntregado());
+        
         panelBotones.add(botonEnRuta);
         panelBotones.add(botonEntregado);
         panel.add(panelBotones, BorderLayout.SOUTH);
@@ -393,4 +491,64 @@ public class DespachoLotesJFrame extends JFrame {
             };
         }
     }
+
+    //metodos extras
+        private void estilizarTablaElegante(JTable t) {
+        t.setRowHeight(26);
+        t.setSelectionBackground(new Color(0xE2, 0xE8, 0xF0));
+        t.setSelectionForeground(COLOR_TEXTO_MAIN);
+        t.setShowVerticalLines(false);
+        t.setGridColor(new Color(0xEE, 0xEE, 0xEE));
+        t.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+        javax.swing.table.JTableHeader header = t.getTableHeader();
+        header.setFont(new Font("SansSerif", Font.BOLD, 12));
+        header.setBackground(COLOR_PRIMARIO);
+        header.setForeground(Color.WHITE);
+        header.setPreferredSize(new Dimension(header.getWidth(), 30));
+        
+        t.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                             boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+                return c;
+            }
+        });
+    }
+
+    private void estilizarBotonPrincipal(JButton boton, Color fondo, Color hover) {
+        boton.setFont(new Font("SansSerif", Font.BOLD, 13));
+        boton.setBackground(fondo);
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        boton.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override public void mouseEntered(java.awt.event.MouseEvent e) { if (boton.isEnabled()) boton.setBackground(hover); }
+            @Override public void mouseExited(java.awt.event.MouseEvent e) { if (boton.isEnabled()) boton.setBackground(fondo); }
+        });
+    }
+
+    private void estilizarBotonSecundario(JButton boton, Color colorBorde) {
+        boton.setFont(new Font("SansSerif", Font.BOLD, 13));
+        boton.setBackground(Color.WHITE);
+        boton.setForeground(colorBorde);
+        boton.setFocusPainted(false);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        boton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(colorBorde, 1), BorderFactory.createEmptyBorder(10, 14, 10, 14)));
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                if (boton.isEnabled()) { boton.setBackground(colorBorde); boton.setForeground(Color.WHITE); }
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                if (boton.isEnabled()) { boton.setBackground(Color.WHITE); boton.setForeground(colorBorde); }
+            }
+        });
+    }
+
 }
