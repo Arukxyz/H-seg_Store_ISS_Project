@@ -5,29 +5,9 @@ import pe.edu.utp.segitd.modelo.Comunidad;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.FechaUtil;
 
-<<<<<<< HEAD
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-=======
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -47,7 +27,6 @@ public class ReportesImpactoJFrame extends JFrame {
     private final JSpinner spinnerHasta = FechaUtil.crearSpinnerFecha(1);
     private final JLabel etiquetaEstado = new JLabel(" ");
 
-<<<<<<< HEAD
     // COLORES (mismo sistema que GestionProductosJFrame)
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3);
     private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);
@@ -59,24 +38,17 @@ public class ReportesImpactoJFrame extends JFrame {
     private final Font FUENTE_LABEL = new Font("SansSerif", Font.BOLD, 12);
     private final Font FUENTE_INPUT = new Font("SansSerif", Font.PLAIN, 13);
 
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     public ReportesImpactoJFrame() {
         super("SEGITD-HÖSÉG · Reportes de impacto");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setContentPane(construirContenido());
-<<<<<<< HEAD
         setMinimumSize(new Dimension(620, 380));
-=======
-        setMinimumSize(new Dimension(560, 280));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pack();
         setLocationRelativeTo(null);
         cargarComunidades();
     }
 
     private JPanel construirContenido() {
-<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -106,15 +78,10 @@ public class ReportesImpactoJFrame extends JFrame {
 
         JPanel form = new JPanel(new GridBagLayout());
         form.setBackground(Color.WHITE);
-=======
-        JPanel raiz = new JPanel(new GridBagLayout());
-        raiz.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(6, 6, 6, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-<<<<<<< HEAD
         gbc.weightx = 0.35;
 
         comboComunidad.setRenderer(new TodasListRenderer());
@@ -166,46 +133,6 @@ public class ReportesImpactoJFrame extends JFrame {
             estilizarComponenteForm((JComponent) ((JSpinner) campo).getEditor());
         }
         panel.add(campo, gbc);
-=======
-
-        JLabel titulo = new JLabel("Reporte de impacto");
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        raiz.add(titulo, gbc);
-
-        gbc.gridwidth = 1;
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        raiz.add(new JLabel("Comunidad:"), gbc);
-        gbc.gridx = 1;
-        comboComunidad.setRenderer(new TodasListRenderer());
-        raiz.add(comboComunidad, gbc);
-
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        raiz.add(new JLabel("Desde:"), gbc);
-        gbc.gridx = 1;
-        raiz.add(spinnerDesde, gbc);
-
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        raiz.add(new JLabel("Hasta:"), gbc);
-        gbc.gridx = 1;
-        raiz.add(spinnerHasta, gbc);
-
-        JButton botonExportar = new JButton("Exportar a Excel");
-        botonExportar.addActionListener(e -> exportar());
-        gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        raiz.add(botonExportar, gbc);
-
-        gbc.gridy = 5;
-        raiz.add(etiquetaEstado, gbc);
-
-        return raiz;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarComunidades() {
@@ -250,7 +177,6 @@ public class ReportesImpactoJFrame extends JFrame {
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
-<<<<<<< HEAD
     private void estilizarComponenteForm(JComponent comp) {
         comp.setFont(FUENTE_INPUT);
         comp.setBackground(Color.WHITE);
@@ -281,8 +207,6 @@ public class ReportesImpactoJFrame extends JFrame {
         });
     }
 
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private static final class TodasListRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -291,7 +215,6 @@ public class ReportesImpactoJFrame extends JFrame {
             return super.getListCellRendererComponent(list, texto, index, isSelected, cellHasFocus);
         }
     }
-<<<<<<< HEAD
 
     private static class FranjaDecorativaHoseg extends JComponent {
         public FranjaDecorativaHoseg() {
@@ -317,6 +240,3 @@ public class ReportesImpactoJFrame extends JFrame {
         }
     }
 }
-=======
-}
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987

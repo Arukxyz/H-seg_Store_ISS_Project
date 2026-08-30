@@ -8,7 +8,6 @@ import pe.edu.utp.segitd.modelo.Venta;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.FechaUtil;
 
-<<<<<<< HEAD
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,28 +21,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.table.AbstractTableModel;
 
-=======
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.Timer;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.table.AbstractTableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.OffsetDateTime;
@@ -80,7 +57,6 @@ public class PedidosWebJFrame extends JFrame {
 
     private final Timer timerActualizacion = new Timer(30_000, e -> cargarPedidos());
 
-<<<<<<< HEAD
 
     //DISEÑO
      private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema suave
@@ -107,14 +83,6 @@ public class PedidosWebJFrame extends JFrame {
         setMinimumSize(new Dimension(980, 560));
         pack();
         setSize(1050, 610);
-=======
-    public PedidosWebJFrame() {
-        super("SEGITD-HÖSÉG · Pedidos web");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setContentPane(construirContenido());
-        setMinimumSize(new Dimension(980, 620));
-        pack();
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         setLocationRelativeTo(null);
         cargarPedidos();
         timerActualizacion.start();
@@ -127,7 +95,6 @@ public class PedidosWebJFrame extends JFrame {
     }
 
     private JPanel construirContenido() {
-<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -151,22 +118,11 @@ public class PedidosWebJFrame extends JFrame {
         }
 
         raiz.add(splitVertical, BorderLayout.CENTER);
-=======
-        JPanel raiz = new JPanel(new BorderLayout(10, 10));
-        raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        raiz.add(construirFiltros(), BorderLayout.NORTH);
-
-        JSplitPane splitVertical = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelPedidos(), construirPanelDetalle());
-        splitVertical.setResizeWeight(0.55);
-        raiz.add(splitVertical, BorderLayout.CENTER);
-
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         raiz.add(construirPanelAcciones(), BorderLayout.SOUTH);
         return raiz;
     }
 
     private JPanel construirFiltros() {
-<<<<<<< HEAD
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
         panel.setBackground(COLOR_FONDO_VENTANA);
 
@@ -201,39 +157,18 @@ public class PedidosWebJFrame extends JFrame {
         etiquetaEstado.setForeground(COLOR_GRIS_TEXTO);
         panel.add(etiquetaEstado);
 
-=======
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        comboEstado.setRenderer(new EstadoListRenderer());
-        panel.add(new JLabel("Estado:"));
-        panel.add(comboEstado);
-        panel.add(new JLabel("Desde:"));
-        panel.add(spinnerDesde);
-        panel.add(new JLabel("Hasta:"));
-        panel.add(spinnerHasta);
-        JButton botonFiltrar = new JButton("Filtrar");
-        botonFiltrar.addActionListener(e -> cargarPedidos());
-        panel.add(botonFiltrar);
-        JButton botonActualizar = new JButton("Actualizar");
-        botonActualizar.addActionListener(e -> cargarPedidos());
-        panel.add(botonActualizar);
-        panel.add(etiquetaEstado);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirPanelPedidos() {
-<<<<<<< HEAD
         estilizarTablaElegante(tablaPedidos);
 
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaPedidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaPedidos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarDetalleSeleccionado();
             }
         });
-<<<<<<< HEAD
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -250,16 +185,10 @@ public class PedidosWebJFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(tablaPedidos);
         scrollPane.setBorder(new javax.swing.border.LineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
         panel.add(scrollPane, BorderLayout.CENTER);
-=======
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Pedidos"));
-        panel.add(new JScrollPane(tablaPedidos), BorderLayout.CENTER);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirPanelDetalle() {
-<<<<<<< HEAD
          JPanel panelContenedorDual = new JPanel(new GridLayout(1, 2, 16, 0));
         panelContenedorDual.setBackground(COLOR_FONDO_VENTANA);
         panelContenedorDual.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
@@ -296,31 +225,6 @@ public class PedidosWebJFrame extends JFrame {
         
         panel.add(botonAnular);
         panel.add(botonConfirmar);
-=======
-        JPanel panel = new JPanel(new GridLayout(1, 2, 10, 0));
-
-        JPanel panelDetalle = new JPanel(new BorderLayout());
-        panelDetalle.setBorder(BorderFactory.createTitledBorder("Detalle del pedido"));
-        panelDetalle.add(new JScrollPane(tablaDetalle), BorderLayout.CENTER);
-        panel.add(panelDetalle);
-
-        JPanel panelDonaciones = new JPanel(new BorderLayout());
-        panelDonaciones.setBorder(BorderFactory.createTitledBorder("Donaciones generadas"));
-        panelDonaciones.add(new JScrollPane(tablaDonaciones), BorderLayout.CENTER);
-        panel.add(panelDonaciones);
-
-        return panel;
-    }
-
-    private JPanel construirPanelAcciones() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        botonConfirmar.setEnabled(false);
-        botonAnular.setEnabled(false);
-        botonConfirmar.addActionListener(e -> confirmarSeleccionado());
-        botonAnular.addActionListener(e -> anularSeleccionado());
-        panel.add(botonConfirmar);
-        panel.add(botonAnular);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
@@ -355,7 +259,6 @@ public class PedidosWebJFrame extends JFrame {
         actualizarBotones();
     }
 
-<<<<<<< HEAD
 
     //
         private void actualizarBotones() {
@@ -391,14 +294,6 @@ public class PedidosWebJFrame extends JFrame {
     }
 
 
-=======
-    private void actualizarBotones() {
-        Venta venta = ventaSeleccionada();
-        botonConfirmar.setEnabled(venta != null && venta.getEstado() == EstadoVenta.PENDIENTE);
-        botonAnular.setEnabled(venta != null && venta.getEstado() != EstadoVenta.ANULADO);
-    }
-
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private Venta ventaSeleccionada() {
         int fila = tablaPedidos.getSelectedRow();
         return fila < 0 ? null : modeloPedidos.obtener(tablaPedidos.convertRowIndexToModel(fila));
@@ -563,7 +458,6 @@ public class PedidosWebJFrame extends JFrame {
             };
         }
     }
-<<<<<<< HEAD
 
     //metodos extras
     private void estilizarTablaElegante(JTable t) {
@@ -709,6 +603,4 @@ public class PedidosWebJFrame extends JFrame {
     }
 
 
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 }

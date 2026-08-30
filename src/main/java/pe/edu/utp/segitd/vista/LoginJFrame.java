@@ -5,7 +5,6 @@ import pe.edu.utp.segitd.servicio.AuthService;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
 
-<<<<<<< HEAD
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -13,20 +12,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-=======
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.util.Arrays;
 
 /**
@@ -38,7 +23,6 @@ public class LoginJFrame extends JFrame {
 
     private final AuthService authService = new AuthService();
 
-<<<<<<< HEAD
     private final JTextField campoUsuario = new JTextField(15);
     private final JPasswordField campoPassword = new JPasswordField(15);
     private final JLabel etiquetaMensaje = new JLabel(" ");
@@ -61,13 +45,6 @@ public class LoginJFrame extends JFrame {
 
 
 
-=======
-    private final JTextField campoUsuario = new JTextField(18);
-    private final JPasswordField campoPassword = new JPasswordField(18);
-    private final JLabel etiquetaMensaje = new JLabel(" ");
-    private final JButton botonIngresar = new JButton("Ingresar");
-
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     public LoginJFrame() {
         super("SEGITD-HÖSÉG · Ingreso");
         construirInterfaz();
@@ -79,7 +56,6 @@ public class LoginJFrame extends JFrame {
     }
 
     private void construirInterfaz() {
-<<<<<<< HEAD
 
         //panel principal
         JPanel panelPrincipal = new JPanel(new GridLayout(1, 2));
@@ -214,48 +190,6 @@ public class LoginJFrame extends JFrame {
     }
 
 
-=======
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(24, 32, 24, 32));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JLabel titulo = new JLabel("Höség Store — Back office");
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(titulo, gbc);
-
-        gbc.gridwidth = 1;
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        panel.add(new JLabel("Usuario:"), gbc);
-        gbc.gridx = 1;
-        panel.add(campoUsuario, gbc);
-
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        panel.add(new JLabel("Contraseña:"), gbc);
-        gbc.gridx = 1;
-        panel.add(campoPassword, gbc);
-
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        etiquetaMensaje.setForeground(new Color(0xB0, 0x00, 0x20));
-        panel.add(etiquetaMensaje, gbc);
-
-        gbc.gridy = 4;
-        panel.add(botonIngresar, gbc);
-
-        getRootPane().setDefaultButton(botonIngresar);
-        setContentPane(panel);
-    }
-
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private void intentarIngresar() {
         String usuario = campoUsuario.getText().trim();
         char[] password = campoPassword.getPassword();
@@ -286,7 +220,6 @@ public class LoginJFrame extends JFrame {
     private void mostrarMensaje(String mensaje) {
         etiquetaMensaje.setText(mensaje);
     }
-<<<<<<< HEAD
 
 
     //Clase para la imagen
@@ -350,6 +283,3 @@ public class LoginJFrame extends JFrame {
 
 }
 
-=======
-}
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987

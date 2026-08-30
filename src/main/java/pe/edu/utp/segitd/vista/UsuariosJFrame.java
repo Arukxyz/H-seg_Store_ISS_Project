@@ -5,35 +5,12 @@ import pe.edu.utp.segitd.modelo.RolUsuario;
 import pe.edu.utp.segitd.modelo.Usuario;
 import pe.edu.utp.segitd.servicio.ServicioException;
 
-<<<<<<< HEAD
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-=======
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,7 +38,6 @@ public class UsuariosJFrame extends JFrame {
 
     private Integer idEnEdicion;
 
-<<<<<<< HEAD
     // COLORES (mismo sistema que GestionProductosJFrame)
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3);
     private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);
@@ -80,13 +56,6 @@ public class UsuariosJFrame extends JFrame {
         panelRaiz.setBackground(COLOR_FONDO_VENTANA);
         setContentPane(panelRaiz);
         setMinimumSize(new Dimension(880, 540));
-=======
-    public UsuariosJFrame() {
-        super("SEGITD-HÖSÉG · Gestión de usuarios");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setContentPane(construirContenido());
-        setMinimumSize(new Dimension(760, 520));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pack();
         setLocationRelativeTo(null);
         cargarUsuarios();
@@ -94,7 +63,6 @@ public class UsuariosJFrame extends JFrame {
     }
 
     private JPanel construirContenido() {
-<<<<<<< HEAD
         JPanel raiz = new JPanel(new BorderLayout(16, 16));
         raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         raiz.setBackground(COLOR_FONDO_VENTANA);
@@ -120,18 +88,11 @@ public class UsuariosJFrame extends JFrame {
             ((javax.swing.plaf.basic.BasicSplitPaneUI) split.getUI()).getDivider().setBorder(null);
         }
 
-=======
-        JPanel raiz = new JPanel(new BorderLayout(12, 12));
-        raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, construirPanelTabla(), construirPanelFormulario());
-        split.setResizeWeight(0.6);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         raiz.add(split, BorderLayout.CENTER);
         return raiz;
     }
 
     private JPanel construirPanelTabla() {
-<<<<<<< HEAD
         tablaUsuarios.setRowHeight(28);
         tablaUsuarios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaUsuarios.setSelectionBackground(new Color(0xE2, 0xE8, 0xF0));
@@ -146,15 +107,11 @@ public class UsuariosJFrame extends JFrame {
         header.setPreferredSize(new Dimension(header.getWidth(), 32));
         ((DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
 
-=======
-        tablaUsuarios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaUsuarios.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tablaUsuarios.getSelectedRow() >= 0) {
                 cargarFormulario(modeloUsuarios.obtener(tablaUsuarios.convertRowIndexToModel(tablaUsuarios.getSelectedRow())));
             }
         });
-<<<<<<< HEAD
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -163,24 +120,16 @@ public class UsuariosJFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(tablaUsuarios);
         scrollPane.setBorder(new LineBorder(new Color(0xE2, 0xE2, 0xE0), 1));
         panel.add(scrollPane, BorderLayout.CENTER);
-=======
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(tablaUsuarios), BorderLayout.CENTER);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         return panel;
     }
 
     private JPanel construirPanelFormulario() {
-<<<<<<< HEAD
         JPanel panel = new JPanel(new BorderLayout(0, 16));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(0xE2, 0xE2, 0xE0), 1),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
-=======
-        JPanel panel = new JPanel(new BorderLayout(0, 12));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(construirFormulario(), BorderLayout.CENTER);
         panel.add(construirBotones(), BorderLayout.SOUTH);
         return panel;
@@ -188,7 +137,6 @@ public class UsuariosJFrame extends JFrame {
 
     private JPanel construirFormulario() {
         JPanel panel = new JPanel(new GridBagLayout());
-<<<<<<< HEAD
         panel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(4, 6, 4, 6);
@@ -199,40 +147,10 @@ public class UsuariosJFrame extends JFrame {
         agregarCampo(panel, gbc, 1, "Usuario:", txtUsername);
         agregarCampo(panel, gbc, 2, "Contraseña inicial:", txtPassword);
         agregarCampo(panel, gbc, 3, "Rol:", comboRol);
-=======
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-
-        gbc.gridy = 0;
-        panel.add(new JLabel("Nombre:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtNombre, gbc);
-
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        panel.add(new JLabel("Usuario:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtUsername, gbc);
-
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        panel.add(new JLabel("Contraseña inicial:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtPassword, gbc);
-
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        panel.add(new JLabel("Rol:"), gbc);
-        gbc.gridx = 1;
-        panel.add(comboRol, gbc);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 
         return panel;
     }
 
-<<<<<<< HEAD
     private void agregarCampo(JPanel panel, GridBagConstraints gbc, int fila, String etiqueta, JComponent campo) {
         gbc.gridy = fila;
         gbc.gridx = 0;
@@ -265,10 +183,6 @@ public class UsuariosJFrame extends JFrame {
         estilizarBotonSecundario(botonDesactivar, COLOR_BURDEO);
         estilizarBotonSecundario(botonResetearPassword, COLOR_PRIMARIO);
 
-=======
-    private JPanel construirBotones() {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 8, 8));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         botonNuevo.addActionListener(e -> limpiarFormulario());
         botonGuardar.addActionListener(e -> guardar());
         botonDesactivar.addActionListener(e -> desactivar());
@@ -358,10 +272,7 @@ public class UsuariosJFrame extends JFrame {
             return;
         }
         JPasswordField campoNueva = new JPasswordField(16);
-<<<<<<< HEAD
         estilizarComponenteForm(campoNueva);
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         int resultado = JOptionPane.showConfirmDialog(this, campoNueva, "Nueva contraseña",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (resultado != JOptionPane.OK_OPTION) {
@@ -378,7 +289,6 @@ public class UsuariosJFrame extends JFrame {
         }
     }
 
-<<<<<<< HEAD
     private void estilizarComponenteForm(JComponent comp) {
         comp.setFont(FUENTE_INPUT);
         comp.setBackground(Color.WHITE);
@@ -437,8 +347,6 @@ public class UsuariosJFrame extends JFrame {
         });
     }
 
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private static final class ModeloUsuarios extends AbstractTableModel {
         private final String[] columnas = {"Nombre", "Usuario", "Rol", "Activo"};
         private List<Usuario> usuarios = List.of();
@@ -479,7 +387,6 @@ public class UsuariosJFrame extends JFrame {
             };
         }
     }
-<<<<<<< HEAD
 
     private static class FranjaDecorativaHoseg extends JComponent {
         public FranjaDecorativaHoseg() {
@@ -505,6 +412,3 @@ public class UsuariosJFrame extends JFrame {
         }
     }
 }
-=======
-}
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987

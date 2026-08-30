@@ -7,15 +7,6 @@ import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.Proveedor;
 import pe.edu.utp.segitd.servicio.ServicioException;
 
-<<<<<<< HEAD
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
-=======
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -39,7 +30,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -72,33 +62,11 @@ public class ProveedoresJFrame extends JFrame {
     private final JButton botonRecibido = new JButton("Marcar recibido");
     private final JButton botonAnularPedido = new JButton("Anular pedido");
 
-<<<<<<< HEAD
-    // COLORES (mismo sistema que GestionProductosJFrame)
-    private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3);
-    private final Color COLOR_PRIMARIO = new Color(0x2D, 0x3A, 0x33);
-    private final Color COLOR_PRIMARIO_HOVER = new Color(0x3D, 0x4E, 0x45);
-    private final Color COLOR_BURDEO = new Color(0x8C, 0x2D, 0x19);
-    private final Color COLOR_GRIS_TEXTO = new Color(0x55, 0x55, 0x55);
-    private final Color COLOR_TEXTO_MAIN = new Color(0x1A, 0x1A, 0x1A);
-    private final Color COLOR_BORDE = new Color(0xE2, 0xE2, 0xE0);
-
-    private final Font FUENTE_LABEL = new Font("SansSerif", Font.BOLD, 12);
-    private final Font FUENTE_INPUT = new Font("SansSerif", Font.PLAIN, 13);
-
-    public ProveedoresJFrame() {
-        super("SEGITD-HÖSÉG · Proveedores");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        JPanel panelRaiz = construirContenido();
-        panelRaiz.setBackground(COLOR_FONDO_VENTANA);
-        setContentPane(panelRaiz);
-        setMinimumSize(new Dimension(1020, 620));
-=======
     public ProveedoresJFrame() {
         super("SEGITD-HÖSÉG · Proveedores");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setContentPane(construirContenido());
         setMinimumSize(new Dimension(980, 600));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pack();
         setLocationRelativeTo(null);
         cargarProveedores();
@@ -107,32 +75,9 @@ public class ProveedoresJFrame extends JFrame {
     }
 
     private JPanel construirContenido() {
-<<<<<<< HEAD
-        JPanel raiz = new JPanel(new BorderLayout(16, 16));
-        raiz.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        raiz.setBackground(COLOR_FONDO_VENTANA);
-
-        JPanel panelTop = new JPanel();
-        panelTop.setLayout(new BoxLayout(panelTop, BoxLayout.Y_AXIS));
-        panelTop.setBackground(COLOR_FONDO_VENTANA);
-
-        JLabel titulo = new JLabel("Proveedores y pedidos de reposición");
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 18));
-        titulo.setForeground(COLOR_TEXTO_MAIN);
-        panelTop.add(titulo);
-        panelTop.add(Box.createVerticalStrut(10));
-        panelTop.add(new FranjaDecorativaHoseg());
-
-        raiz.add(panelTop, BorderLayout.NORTH);
-
-        JTabbedPane pestanas = new JTabbedPane();
-        pestanas.setFont(new Font("SansSerif", Font.BOLD, 13));
-        pestanas.setBackground(COLOR_FONDO_VENTANA);
-=======
         JPanel raiz = new JPanel(new BorderLayout());
         raiz.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         JTabbedPane pestanas = new JTabbedPane();
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         pestanas.addTab("Proveedores", construirTabProveedores());
         pestanas.addTab("Pedidos de reposición", construirTabPedidos());
         raiz.add(pestanas, BorderLayout.CENTER);
@@ -142,63 +87,15 @@ public class ProveedoresJFrame extends JFrame {
     // ---------- Proveedores ----------
 
     private JPanel construirTabProveedores() {
-<<<<<<< HEAD
-        JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
-        panel.setBackground(COLOR_FONDO_VENTANA);
-
-        panel.add(construirPanelTablaProveedores(), BorderLayout.CENTER);
-        panel.add(construirTarjetaFormularioProveedor(), BorderLayout.SOUTH);
-        return panel;
-    }
-
-    private JPanel construirPanelTablaProveedores() {
-        estilizarTabla(tablaProveedores);
-=======
         JPanel panel = new JPanel(new BorderLayout(12, 12));
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 
         tablaProveedores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaProveedores.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tablaProveedores.getSelectedRow() >= 0) {
                 cargarFormularioProveedor(modeloProveedores.obtener(tablaProveedores.convertRowIndexToModel(tablaProveedores.getSelectedRow())));
             }
         });
-<<<<<<< HEAD
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(COLOR_FONDO_VENTANA);
-        JScrollPane scroll = new JScrollPane(tablaProveedores);
-        scroll.setBorder(new LineBorder(COLOR_BORDE, 1));
-        panel.add(scroll, BorderLayout.CENTER);
-        return panel;
-    }
-
-    private JPanel construirTarjetaFormularioProveedor() {
-        JPanel tarjeta = new JPanel(new BorderLayout(0, 16));
-        tarjeta.setBackground(Color.WHITE);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(COLOR_BORDE, 1),
-                BorderFactory.createEmptyBorder(18, 18, 18, 18)));
-
-        JPanel panelFormulario = new JPanel(new GridBagLayout());
-        panelFormulario.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 6, 4, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-
-        agregarCampo(panelFormulario, gbc, 0, "Nombre del taller:", txtNombreTaller);
-        agregarCampo(panelFormulario, gbc, 1, "RUC:", txtRuc);
-        agregarCampo(panelFormulario, gbc, 2, "Contacto:", txtContacto);
-        agregarCampo(panelFormulario, gbc, 3, "Teléfono:", txtTelefono);
-
-        tarjeta.add(panelFormulario, BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new GridLayout(1, 3, 10, 0));
-        panelBotones.setBackground(Color.WHITE);
-=======
         panel.add(new JScrollPane(tablaProveedores), BorderLayout.CENTER);
 
         JPanel panelFormulario = new JPanel(new GridBagLayout());
@@ -231,29 +128,16 @@ public class ProveedoresJFrame extends JFrame {
         panelFormulario.add(txtTelefono, gbc);
 
         JPanel panelBotones = new JPanel(new GridLayout(1, 3, 8, 0));
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         JButton botonNuevo = new JButton("Nuevo");
         botonNuevo.addActionListener(e -> limpiarFormularioProveedor());
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarProveedor());
         JButton botonBaja = new JButton("Dar de baja");
         botonBaja.addActionListener(e -> darDeBajaProveedor());
-<<<<<<< HEAD
-
-        estilizarBotonSecundario(botonNuevo, COLOR_PRIMARIO);
-        estilizarBotonPrincipal(botonGuardar, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
-        estilizarBotonSecundario(botonBaja, COLOR_BURDEO);
-
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonBaja);
 
-<<<<<<< HEAD
-        tarjeta.add(panelBotones, BorderLayout.SOUTH);
-        return tarjeta;
-=======
         gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -261,7 +145,6 @@ public class ProveedoresJFrame extends JFrame {
 
         panel.add(panelFormulario, BorderLayout.SOUTH);
         return panel;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarProveedores() {
@@ -336,54 +219,23 @@ public class ProveedoresJFrame extends JFrame {
     // ---------- Pedidos ----------
 
     private JPanel construirTabPedidos() {
-<<<<<<< HEAD
-        JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
-        panel.setBackground(COLOR_FONDO_VENTANA);
-
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelListaPedidos(), construirTarjetaNuevoPedido());
-        split.setResizeWeight(0.6);
-        split.setBorder(null);
-        split.setBackground(COLOR_FONDO_VENTANA);
-=======
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, construirPanelListaPedidos(), construirPanelNuevoPedido());
         split.setResizeWeight(0.65);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         panel.add(split, BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel construirPanelListaPedidos() {
-<<<<<<< HEAD
-        estilizarTabla(tablaPedidos);
-=======
         tablaPedidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         tablaPedidos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 actualizarBotonesPedido();
             }
         });
 
-<<<<<<< HEAD
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        panel.setBackground(COLOR_FONDO_VENTANA);
-        panel.setBorder(construirBordeTitulado("Pedidos"));
-
-        JScrollPane scroll = new JScrollPane(tablaPedidos);
-        scroll.setBorder(new LineBorder(COLOR_BORDE, 1));
-        panel.add(scroll, BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
-        panelBotones.setBackground(COLOR_FONDO_VENTANA);
-        botonRecibido.setEnabled(false);
-        botonAnularPedido.setEnabled(false);
-        estilizarBotonPrincipal(botonRecibido, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
-        estilizarBotonSecundario(botonAnularPedido, COLOR_BURDEO);
-=======
         JPanel panel = new JPanel(new BorderLayout(0, 8));
         panel.setBorder(BorderFactory.createTitledBorder("Pedidos"));
         panel.add(new JScrollPane(tablaPedidos), BorderLayout.CENTER);
@@ -391,7 +243,6 @@ public class ProveedoresJFrame extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         botonRecibido.setEnabled(false);
         botonAnularPedido.setEnabled(false);
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
         botonRecibido.addActionListener(e -> marcarRecibido());
         botonAnularPedido.addActionListener(e -> anularPedido());
         panelBotones.add(botonRecibido);
@@ -400,46 +251,6 @@ public class ProveedoresJFrame extends JFrame {
         return panel;
     }
 
-<<<<<<< HEAD
-    private JPanel construirTarjetaNuevoPedido() {
-        JPanel tarjeta = new JPanel(new BorderLayout());
-        tarjeta.setBackground(Color.WHITE);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(COLOR_BORDE, 1),
-                BorderFactory.createEmptyBorder(16, 18, 16, 18)));
-
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 6, 4, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-
-        JLabel subtitulo = new JLabel("Nuevo pedido");
-        subtitulo.setFont(new Font("SansSerif", Font.BOLD, 14));
-        subtitulo.setForeground(COLOR_TEXTO_MAIN);
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(subtitulo, gbc);
-        gbc.gridwidth = 1;
-
-        agregarCampo(panel, gbc, 1, "Proveedor:", comboProveedorPedido);
-        agregarCampo(panel, gbc, 2, "Producto a reponer:", comboProductoPedido);
-        agregarCampo(panel, gbc, 3, "Descripción:", txtDescripcionPedido);
-        agregarCampo(panel, gbc, 4, "Cantidad:", spinnerCantidadPedido);
-
-        JButton botonRegistrar = new JButton("Registrar pedido");
-        estilizarBotonPrincipal(botonRegistrar, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
-        botonRegistrar.addActionListener(e -> registrarPedido());
-        gbc.gridy = 5;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(12, 6, 4, 6);
-        panel.add(botonRegistrar, gbc);
-
-        tarjeta.add(panel, BorderLayout.CENTER);
-        return tarjeta;
-=======
     private JPanel construirPanelNuevoPedido() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Nuevo pedido"));
@@ -479,7 +290,6 @@ public class ProveedoresJFrame extends JFrame {
         panel.add(botonRegistrar, gbc);
 
         return panel;
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     }
 
     private void cargarProductosCombo() {
@@ -572,121 +382,6 @@ public class ProveedoresJFrame extends JFrame {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
-<<<<<<< HEAD
-    // ---------- helpers de estilo ----------
-
-    private void agregarCampo(JPanel panel, GridBagConstraints gbc, int fila, String etiqueta, JComponent campo) {
-        gbc.gridy = fila;
-        gbc.gridx = 0;
-        gbc.weightx = 0.35;
-        gbc.gridwidth = 1;
-
-        JLabel label = new JLabel(etiqueta);
-        label.setFont(FUENTE_LABEL);
-        label.setForeground(COLOR_GRIS_TEXTO);
-        panel.add(label, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.65;
-
-        if (campo instanceof JTextField) {
-            estilizarComponenteForm((JTextField) campo);
-        } else if (campo instanceof JComboBox) {
-            campo.setFont(FUENTE_INPUT);
-            campo.setBackground(Color.WHITE);
-            campo.setBorder(BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1));
-        } else if (campo instanceof JSpinner) {
-            estilizarComponenteForm((JComponent) ((JSpinner) campo).getEditor());
-        }
-        panel.add(campo, gbc);
-    }
-
-    private void estilizarTabla(JTable tabla) {
-        tabla.setRowHeight(28);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabla.setSelectionBackground(new Color(0xE2, 0xE8, 0xF0));
-        tabla.setSelectionForeground(COLOR_TEXTO_MAIN);
-        tabla.setShowVerticalLines(false);
-        tabla.setGridColor(COLOR_BORDE);
-
-        JTableHeader header = tabla.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 12));
-        header.setBackground(COLOR_PRIMARIO);
-        header.setForeground(Color.WHITE);
-        header.setPreferredSize(new Dimension(header.getWidth(), 32));
-        ((DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-    }
-
-    private TitledBorder construirBordeTitulado(String titulo) {
-        TitledBorder borde = BorderFactory.createTitledBorder(
-                new LineBorder(COLOR_BORDE, 1), titulo);
-        borde.setTitleFont(new Font("SansSerif", Font.BOLD, 13));
-        borde.setTitleColor(COLOR_TEXTO_MAIN);
-        return borde;
-    }
-
-    private void estilizarComponenteForm(JComponent comp) {
-        comp.setFont(FUENTE_INPUT);
-        comp.setBackground(Color.WHITE);
-        comp.setForeground(COLOR_TEXTO_MAIN);
-        comp.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xD3, 0xD3, 0xD3), 1),
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
-    }
-
-    private void estilizarBotonPrincipal(JButton boton, Color fondo, Color hover) {
-        boton.setFont(new Font("SansSerif", Font.BOLD, 13));
-        boton.setBackground(fondo);
-        boton.setForeground(Color.WHITE);
-        boton.setFocusPainted(false);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
-
-        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                if (boton.isEnabled()) boton.setBackground(hover);
-            }
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                if (boton.isEnabled()) boton.setBackground(fondo);
-            }
-        });
-    }
-
-    private void estilizarBotonSecundario(JButton boton, Color colorBorde) {
-        boton.setFont(new Font("SansSerif", Font.BOLD, 13));
-        boton.setBackground(Color.WHITE);
-        boton.setForeground(colorBorde);
-        boton.setFocusPainted(false);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(colorBorde, 1),
-                BorderFactory.createEmptyBorder(10, 12, 10, 12)));
-
-        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                if (boton.isEnabled()) {
-                    boton.setBackground(colorBorde);
-                    boton.setForeground(Color.WHITE);
-                }
-            }
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                if (boton.isEnabled()) {
-                    boton.setBackground(Color.WHITE);
-                    boton.setForeground(colorBorde);
-                }
-            }
-        });
-    }
-
-    // ---------- modelos de tabla ----------
-
-=======
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
     private static final class ModeloProveedores extends AbstractTableModel {
         private final String[] columnas = {"Taller", "RUC", "Contacto", "Teléfono"};
         private List<Proveedor> proveedores = List.of();
@@ -770,32 +465,4 @@ public class ProveedoresJFrame extends JFrame {
             };
         }
     }
-<<<<<<< HEAD
-
-    private static class FranjaDecorativaHoseg extends JComponent {
-        public FranjaDecorativaHoseg() {
-            setPreferredSize(new Dimension(100, 4));
-        }
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            LinearGradientPaint degradado = new LinearGradientPaint(
-                    0, 0, getWidth(), 0,
-                    new float[]{0.0f, 0.35f, 0.70f, 1.0f},
-                    new Color[]{
-                            new Color(0x00, 0x33, 0xAA),
-                            new Color(0x6A, 0x1B, 0x9A),
-                            new Color(0xD8, 0x1B, 0x60),
-                            new Color(0xD3, 0x2F, 0x2F)
-                    }
-            );
-            g2d.setPaint(degradado);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-        }
-    }
 }
-=======
-}
->>>>>>> f718887c04f41f7c1e70427ecaf1e0db29752987
