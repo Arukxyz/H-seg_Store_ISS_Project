@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Acceso a datos de usuario (personal interno de Höség).
@@ -103,13 +104,39 @@ public final class UsuarioDAO {
         }
     }
 
-    public void registrarIntentoFallido(int id, int intentosFallidos, OffsetDateTime bloqueadoHasta, Connection conexion) throws SQLException {
-        String sql = "UPDATE usuario SET intentos_fallidos = ?, bloqueado_hasta = ? WHERE id = ?";
+    /**
+     * Guarda el contador y, si {@code minutosBloqueo} > 0, fija el bloqueo
+     * con el reloj del servidor (regla 9.4: nunca la hora de la máquina
+     * cliente, porque hay dos sistemas escribiendo desde equipos distintos).
+     */
+    public void registrarIntentoFallido(int id, int intentosFallidos, int minutosBloqueo, Connection conexion) throws SQLException {
+        String sql = """
+                UPDATE usuario
+                   SET intentos_fallidos = ?,
+                       bloqueado_hasta   = CASE WHEN ? > 0 THEN now() + make_interval(mins => ?) ELSE NULL END
+                 WHERE id = ?
+                """;
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, intentosFallidos);
-            ps.setObject(2, bloqueadoHasta);
-            ps.setInt(3, id);
+            ps.setInt(2, minutosBloqueo);
+            ps.setInt(3, minutosBloqueo);
+            ps.setInt(4, id);
             ps.executeUpdate();
+        }
+    }
+
+    /** Minutos que faltan para que expire el bloqueo, calculados por el servidor; vacío si no está bloqueado. */
+    public OptionalInt minutosRestantesBloqueo(int id, Connection conexion) throws SQLException {
+        String sql = """
+                SELECT CEIL(EXTRACT(EPOCH FROM (bloqueado_hasta - now())) / 60)::int AS minutos
+                  FROM usuario
+                 WHERE id = ? AND bloqueado_hasta > now()
+                """;
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? OptionalInt.of(Math.max(1, rs.getInt("minutos"))) : OptionalInt.empty();
+            }
         }
     }
 

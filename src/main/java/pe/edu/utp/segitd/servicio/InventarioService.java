@@ -8,6 +8,7 @@ import pe.edu.utp.segitd.modelo.OrigenSistema;
 import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.TipoMovimiento;
 import pe.edu.utp.segitd.modelo.TipoStock;
+import pe.edu.utp.segitd.util.Validador;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,6 +37,7 @@ public class InventarioService {
     }
 
     public void crearProducto(Producto producto) {
+        validarProducto(producto);
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             if (productoDAO.existeCodigo(producto.getCodigo(), conexion)) {
                 throw new ServicioException("Ya existe un producto con el código " + producto.getCodigo() + ".");
@@ -47,10 +49,24 @@ public class InventarioService {
     }
 
     public void actualizarProducto(Producto producto) {
+        validarProducto(producto);
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             productoDAO.actualizarDatos(producto, conexion);
         } catch (SQLException e) {
             throw new ServicioException("No se pudo actualizar el producto.", e);
+        }
+    }
+
+    /** Presencia y coherencia de campos (RF-02); la vista solo parsea el texto. */
+    private void validarProducto(Producto producto) {
+        producto.setCodigo(Validador.obligatorio(producto.getCodigo(), "Código"));
+        producto.setNombre(Validador.obligatorio(producto.getNombre(), "Nombre"));
+        producto.setCategoria(Validador.obligatorio(producto.getCategoria(), "Categoría"));
+        if (producto.getPrecio() == null || producto.getPrecio().signum() < 0) {
+            throw new ServicioException("El precio no puede ser negativo.");
+        }
+        if (producto.isAplicaTripleImpacto() && producto.getTipoCompromiso() == null) {
+            throw new ServicioException("Un producto con triple impacto debe indicar su tipo de compromiso (ABRIGO o ÁRBOL).");
         }
     }
 
