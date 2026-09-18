@@ -157,8 +157,8 @@ WITH id_gen AS (
     SELECT nextval(pg_get_serial_sequence('lote_donacion', 'id')) AS id
 ),
 nuevo_lote AS (
-    INSERT INTO lote_donacion (id, codigo_lote, id_comunidad, id_ong, id_usuario_responsable, estado, fecha_despacho)
-    SELECT id_gen.id, 'HSG-L' || lpad(id_gen.id::text, 3, '0'), com.id, o.id, u.id, 'ENTREGADO', now() - interval '2 days'
+    INSERT INTO lote_donacion (id, codigo_lote, id_comunidad, id_ong, id_usuario_responsable, estado, fecha_creacion, fecha_despacho)
+    SELECT id_gen.id, 'HSG-L' || lpad(id_gen.id::text, 3, '0'), com.id, o.id, u.id, 'ENTREGADO', now() - interval '4 days', now() - interval '2 days'
     FROM id_gen, comunidad com, ong o, usuario u
     WHERE com.nombre = 'Paucartambo' AND o.nombre = 'Pachamama Raymi' AND u.username = 'admin'
     RETURNING id, codigo_lote
