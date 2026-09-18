@@ -1,6 +1,7 @@
 package pe.edu.utp.segitd.controlador;
 
 import pe.edu.utp.segitd.modelo.Comunidad;
+import pe.edu.utp.segitd.modelo.FilaHistorialDespacho;
 import pe.edu.utp.segitd.modelo.FilaTrazabilidad;
 import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.servicio.ReporteService;
@@ -24,8 +25,9 @@ public class ReportesImpactoControlador {
 
     public File exportar(OffsetDateTime desde, OffsetDateTime hasta, Integer idComunidad) throws IOException {
         List<FilaTrazabilidad> trazabilidad = reporteService.generarTrazabilidad(desde, hasta, idComunidad);
-        ResumenImpacto resumen = reporteService.calcularResumen(trazabilidad);
+        List<FilaHistorialDespacho> historial = reporteService.generarHistorialDespachos(desde, hasta, idComunidad);
+        ResumenImpacto resumen = reporteService.calcularResumen(desde, hasta, historial);
         List<Producto> inventario = reporteService.listarInventario();
-        return excelExporter.exportarReporteImpacto(resumen, trazabilidad, inventario);
+        return excelExporter.exportarReporteImpacto(desde, hasta, resumen, trazabilidad, historial, inventario);
     }
 }
