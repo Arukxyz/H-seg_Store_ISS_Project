@@ -7,8 +7,7 @@ import pe.edu.utp.segitd.util.HashUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.OffsetDateTime;
+import java.util.OptionalInt;
 
 /**
  * Autenticación de usuarios internos (RF-01). El contador de intentos
@@ -18,7 +17,7 @@ import java.time.OffsetDateTime;
 public class AuthService {
 
     private static final int MAX_INTENTOS_FALLIDOS = 3;
-    private static final Duration DURACION_BLOQUEO = Duration.ofMinutes(5);
+    private static final int MINUTOS_BLOQUEO = 5;
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
@@ -31,7 +30,7 @@ public class AuthService {
                 throw new ServicioException("El usuario está inactivo. Contacta a un administrador.");
             }
 
-            verificarBloqueo(usuario);
+            verificarBloqueo(usuario, conexion);
 
             String hashIngresado = HashUtil.hashear(new String(password), usuario.getSalt());
             if (!hashIngresado.equals(usuario.getPasswordHash())) {
@@ -46,20 +45,18 @@ public class AuthService {
         }
     }
 
-    private void verificarBloqueo(Usuario usuario) {
-        OffsetDateTime bloqueadoHasta = usuario.getBloqueadoHasta();
-        if (bloqueadoHasta != null && bloqueadoHasta.isAfter(OffsetDateTime.now())) {
-            long minutosRestantes = Duration.between(OffsetDateTime.now(), bloqueadoHasta).toMinutes() + 1;
+    /** El tiempo restante lo calcula Postgres con su propio now() (regla 9.4). */
+    private void verificarBloqueo(Usuario usuario, Connection conexion) throws SQLException {
+        OptionalInt minutosRestantes = usuarioDAO.minutosRestantesBloqueo(usuario.getId(), conexion);
+        if (minutosRestantes.isPresent()) {
             throw new ServicioException(
-                    "Usuario bloqueado temporalmente. Intenta de nuevo en " + minutosRestantes + " minuto(s).");
+                    "Usuario bloqueado temporalmente. Intenta de nuevo en " + minutosRestantes.getAsInt() + " minuto(s).");
         }
     }
 
     private void registrarIntentoFallido(Usuario usuario, Connection conexion) throws SQLException {
         int intentos = usuario.getIntentosFallidos() + 1;
-        OffsetDateTime bloqueadoHasta = intentos >= MAX_INTENTOS_FALLIDOS
-                ? OffsetDateTime.now().plus(DURACION_BLOQUEO)
-                : null;
-        usuarioDAO.registrarIntentoFallido(usuario.getId(), intentos, bloqueadoHasta, conexion);
+        int minutosBloqueo = intentos >= MAX_INTENTOS_FALLIDOS ? MINUTOS_BLOQUEO : 0;
+        usuarioDAO.registrarIntentoFallido(usuario.getId(), intentos, minutosBloqueo, conexion);
     }
 }

@@ -5,6 +5,7 @@ import pe.edu.utp.segitd.db.ConexionBD;
 import pe.edu.utp.segitd.modelo.RolUsuario;
 import pe.edu.utp.segitd.modelo.Usuario;
 import pe.edu.utp.segitd.util.HashUtil;
+import pe.edu.utp.segitd.util.Validador;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,7 +25,7 @@ public class UsuarioService {
     }
 
     public void crearUsuario(String nombre, String username, String password, RolUsuario rol) {
-        if (esVacio(nombre) || esVacio(username) || esVacio(password)) {
+        if (Validador.esVacio(nombre) || Validador.esVacio(username) || Validador.esVacio(password)) {
             throw new ServicioException("Nombre, usuario y contraseña son obligatorios.");
         }
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -47,7 +48,7 @@ public class UsuarioService {
     }
 
     public void actualizarUsuario(int id, String nombre, RolUsuario rol) {
-        if (esVacio(nombre)) {
+        if (Validador.esVacio(nombre)) {
             throw new ServicioException("El nombre es obligatorio.");
         }
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -74,7 +75,7 @@ public class UsuarioService {
     }
 
     public void resetearPassword(int id, String nuevaPassword) {
-        if (esVacio(nuevaPassword)) {
+        if (Validador.esVacio(nuevaPassword)) {
             throw new ServicioException("La nueva contraseña no puede estar vacía.");
         }
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -84,9 +85,5 @@ public class UsuarioService {
         } catch (SQLException e) {
             throw new ServicioException("No se pudo restablecer la contraseña.", e);
         }
-    }
-
-    private boolean esVacio(String valor) {
-        return valor == null || valor.isBlank();
     }
 }
