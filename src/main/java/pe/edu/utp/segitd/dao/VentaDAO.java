@@ -3,12 +3,14 @@ package pe.edu.utp.segitd.dao;
 import pe.edu.utp.segitd.modelo.DetalleVenta;
 import pe.edu.utp.segitd.modelo.EstadoVenta;
 import pe.edu.utp.segitd.modelo.OrigenVenta;
+import pe.edu.utp.segitd.modelo.ResumenVentas;
 import pe.edu.utp.segitd.modelo.Venta;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public final class VentaDAO {
     /** Lista pedidos web, filtrables por estado y rango de fechas (los tres filtros son opcionales). */
     public List<Venta> listarWeb(EstadoVenta estado, OffsetDateTime desde, OffsetDateTime hasta, Connection conexion) throws SQLException {
         StringBuilder sql = new StringBuilder("""
-                SELECT v.*, c.nombre AS cliente_nombre
+                SELECT v.*, c.nombre AS cliente_nombre, c.tipo_doc AS cliente_tipo_doc, c.num_doc AS cliente_num_doc
                   FROM venta v
                   LEFT JOIN cliente c ON c.id = v.id_cliente
                  WHERE v.origen = 'WEB'
@@ -63,7 +65,7 @@ public final class VentaDAO {
 
     public Optional<Venta> buscarPorId(int id, Connection conexion) throws SQLException {
         String sql = """
-                SELECT v.*, c.nombre AS cliente_nombre
+                SELECT v.*, c.nombre AS cliente_nombre, c.tipo_doc AS cliente_tipo_doc, c.num_doc AS cliente_num_doc
                   FROM venta v
                   LEFT JOIN cliente c ON c.id = v.id_cliente
                  WHERE v.id = ?
@@ -120,6 +122,40 @@ public final class VentaDAO {
         }
     }
 
+    /**
+     * Consolidado de pedidos web PAGADOS cuya fecha de venta cae en el rango,
+     * para la sección "ventas versus donaciones" del reporte (RF-07).
+     */
+    public ResumenVentas resumirVentasPagadas(OffsetDateTime desde, OffsetDateTime hasta, Connection conexion) throws SQLException {
+        // El monto se toma una sola vez por venta (CTE), no por línea de detalle,
+        // para no multiplicar v.total por el número de productos del pedido.
+        String sql = """
+                WITH ventas_periodo AS (
+                    SELECT v.id, v.total
+                      FROM venta v
+                     WHERE v.origen = 'WEB' AND v.estado = 'PAGADO'
+                       AND v.fecha >= ? AND v.fecha <= ?
+                )
+                SELECT (SELECT COUNT(*) FROM ventas_periodo)                                    AS pedidos,
+                       (SELECT COALESCE(SUM(total), 0) FROM ventas_periodo)                     AS monto,
+                       COALESCE(SUM(dv.cantidad), 0)                                            AS unidades,
+                       COALESCE(SUM(dv.cantidad) FILTER (WHERE p.aplica_triple_impacto), 0)     AS unidades_compromiso
+                  FROM ventas_periodo vp
+                  JOIN detalle_venta dv ON dv.id_venta = vp.id
+                  JOIN producto p       ON p.codigo = dv.codigo_producto
+                """;
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, desde);
+            ps.setObject(2, hasta);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                BigDecimal monto = rs.getBigDecimal("monto");
+                return new ResumenVentas(rs.getInt("pedidos"), rs.getInt("unidades"), rs.getInt("unidades_compromiso"),
+                        monto == null ? BigDecimal.ZERO : monto);
+            }
+        }
+    }
+
     private Venta mapear(ResultSet rs) throws SQLException {
         Venta venta = new Venta();
         venta.setId(rs.getInt("id"));
@@ -127,6 +163,8 @@ public final class VentaDAO {
         venta.setFecha(rs.getObject("fecha", OffsetDateTime.class));
         venta.setIdCliente((Integer) rs.getObject("id_cliente"));
         venta.setClienteNombre(rs.getString("cliente_nombre"));
+        venta.setClienteTipoDoc(rs.getString("cliente_tipo_doc"));
+        venta.setClienteNumDoc(rs.getString("cliente_num_doc"));
         venta.setIdUsuario((Integer) rs.getObject("id_usuario"));
         venta.setOrigen(OrigenVenta.valueOf(rs.getString("origen")));
         venta.setEstado(EstadoVenta.valueOf(rs.getString("estado")));

@@ -23,6 +23,8 @@ import javax.swing.table.AbstractTableModel;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -53,6 +55,7 @@ public class PedidosWebJFrame extends JFrame {
 
     private final JButton botonConfirmar = new JButton("Confirmar pedido");
     private final JButton botonAnular = new JButton("Anular pedido");
+    private final JButton botonBoleta = new JButton("Emitir boleta PDF");
     private final JLabel etiquetaEstado = new JLabel(" ");
 
     private final Timer timerActualizacion = new Timer(30_000, e -> cargarPedidos());
@@ -216,13 +219,17 @@ public class PedidosWebJFrame extends JFrame {
         
         botonConfirmar.setEnabled(false);
         botonAnular.setEnabled(false);
-        
+        botonBoleta.setEnabled(false);
+
         estilizarBotonPrincipal(botonConfirmar, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
         estilizarBotonSecundario(botonAnular, COLOR_BURDEO);
+        estilizarBotonSecundario(botonBoleta, COLOR_PRIMARIO);
 
         botonConfirmar.addActionListener(e -> confirmarSeleccionado());
         botonAnular.addActionListener(e -> anularSeleccionado());
-        
+        botonBoleta.addActionListener(e -> emitirBoletaSeleccionada());
+
+        panel.add(botonBoleta);
         panel.add(botonAnular);
         panel.add(botonConfirmar);
         return panel;
@@ -266,10 +273,13 @@ public class PedidosWebJFrame extends JFrame {
         
         boolean sePuedeConfirmar = venta != null && venta.getEstado() == EstadoVenta.PENDIENTE;
         boolean sePuedeAnular = venta != null && venta.getEstado() != EstadoVenta.ANULADO;
-        
+        boolean sePuedeEmitirBoleta = venta != null && venta.getEstado() == EstadoVenta.PAGADO;
+
         botonConfirmar.setEnabled(sePuedeConfirmar);
         botonAnular.setEnabled(sePuedeAnular);
-        
+        botonBoleta.setEnabled(sePuedeEmitirBoleta);
+        estilizarSecundarioSegunEstado(botonBoleta, COLOR_PRIMARIO, sePuedeEmitirBoleta);
+
         if (!sePuedeConfirmar) {
             botonConfirmar.setBackground(new Color(0xE0, 0xE0, 0xE0)); 
             botonConfirmar.setForeground(new Color(0x9E, 0x9E, 0x9E));
@@ -278,17 +288,21 @@ public class PedidosWebJFrame extends JFrame {
             botonConfirmar.setForeground(Color.WHITE);
         }
         
-        if (!sePuedeAnular) {
-            botonAnular.setBackground(new Color(0xE0, 0xE0, 0xE0));
-            botonAnular.setForeground(new Color(0x9E, 0x9E, 0x9E));
-            botonAnular.setBorder(BorderFactory.createCompoundBorder(
-                    new javax.swing.border.LineBorder(new Color(0xBD, 0xBD, 0xBD), 1), 
+        estilizarSecundarioSegunEstado(botonAnular, COLOR_BURDEO, sePuedeAnular);
+    }
+
+    private void estilizarSecundarioSegunEstado(JButton boton, Color colorActivo, boolean habilitado) {
+        if (!habilitado) {
+            boton.setBackground(new Color(0xE0, 0xE0, 0xE0));
+            boton.setForeground(new Color(0x9E, 0x9E, 0x9E));
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    new javax.swing.border.LineBorder(new Color(0xBD, 0xBD, 0xBD), 1),
                     BorderFactory.createEmptyBorder(10, 16, 10, 16)));
         } else {
-            botonAnular.setBackground(Color.WHITE);
-            botonAnular.setForeground(COLOR_BURDEO);
-            botonAnular.setBorder(BorderFactory.createCompoundBorder(
-                    new javax.swing.border.LineBorder(COLOR_BURDEO, 1), 
+            boton.setBackground(Color.WHITE);
+            boton.setForeground(colorActivo);
+            boton.setBorder(BorderFactory.createCompoundBorder(
+                    new javax.swing.border.LineBorder(colorActivo, 1),
                     BorderFactory.createEmptyBorder(10, 16, 10, 16)));
         }
     }
@@ -332,6 +346,37 @@ public class PedidosWebJFrame extends JFrame {
         } catch (ServicioException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /** Módulo 5: boleta digital con QR de trazabilidad RSU, solo para pedidos PAGADO. */
+    private void emitirBoletaSeleccionada() {
+        Venta venta = ventaSeleccionada();
+        if (venta == null) {
+            return;
+        }
+        try {
+            File archivo = controlador.emitirBoleta(venta.getId());
+            etiquetaEstado.setText("Boleta generada: " + archivo.getName());
+            abrirArchivo(archivo);
+        } catch (ServicioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void abrirArchivo(File archivo) {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+            try {
+                Desktop.getDesktop().open(archivo);
+                return;
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this,
+                        "La boleta se generó en " + archivo.getAbsolutePath() + " pero no se pudo abrir automáticamente.",
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Boleta generada en " + archivo.getAbsolutePath(),
+                "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static final class EstadoListRenderer extends DefaultListCellRenderer {

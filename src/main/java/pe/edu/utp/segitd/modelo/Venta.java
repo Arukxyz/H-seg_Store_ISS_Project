@@ -9,8 +9,10 @@ public class Venta {
     private String codigoComprobante;
     private OffsetDateTime fecha;
     private Integer idCliente;
-    /** Solo lectura: poblado por VentaDAO mediante JOIN con cliente, no se persiste. */
+    /** Solo lectura: poblados por VentaDAO mediante JOIN con cliente, no se persisten. */
     private String clienteNombre;
+    private String clienteTipoDoc;
+    private String clienteNumDoc;
     private Integer idUsuario;
     private OrigenVenta origen;
     private EstadoVenta estado;
@@ -30,6 +32,12 @@ public class Venta {
 
     public String getClienteNombre() { return clienteNombre; }
     public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+
+    public String getClienteTipoDoc() { return clienteTipoDoc; }
+    public void setClienteTipoDoc(String clienteTipoDoc) { this.clienteTipoDoc = clienteTipoDoc; }
+
+    public String getClienteNumDoc() { return clienteNumDoc; }
+    public void setClienteNumDoc(String clienteNumDoc) { this.clienteNumDoc = clienteNumDoc; }
 
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }

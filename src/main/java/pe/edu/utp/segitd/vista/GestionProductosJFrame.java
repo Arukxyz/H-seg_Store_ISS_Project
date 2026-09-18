@@ -7,6 +7,7 @@ import pe.edu.utp.segitd.modelo.TipoCompromiso;
 import pe.edu.utp.segitd.modelo.TipoStock;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
+import pe.edu.utp.segitd.util.Validador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -417,34 +418,19 @@ public class GestionProductosJFrame extends JFrame {
         }
     }
 
+    /** Solo traduce el formulario a un Producto; las validaciones viven en InventarioService. */
     private Producto leerFormulario() {
-        String codigo = txtCodigo.getText().trim();
-        String nombre = txtNombre.getText().trim();
-        String categoria = txtCategoria.getText().trim();
-
-        if (codigo.isEmpty() || nombre.isEmpty() || categoria.isEmpty()) {
-            throw new ServicioException("Código, nombre y categoría son obligatorios.");
-        }
-
-        BigDecimal precio;
-        try {
-            precio = new BigDecimal(txtPrecio.getText().trim());
-        } catch (NumberFormatException e) {
-            throw new ServicioException("El precio debe ser un número válido.");
-        }
-        if (precio.signum() < 0) {
-            throw new ServicioException("El precio no puede ser negativo.");
-        }
+        BigDecimal precio = Validador.decimalNoNegativo(txtPrecio.getText(), "Precio");
 
         Producto producto = new Producto();
-        producto.setCodigo(codigo);
-        producto.setNombre(nombre);
-        producto.setMarca(vacioComoNulo(txtMarca.getText()));
-        producto.setCategoria(categoria);
-        producto.setColeccion(vacioComoNulo(txtColeccion.getText()));
-        producto.setTalla(vacioComoNulo(txtTalla.getText()));
-        producto.setDescripcion(vacioComoNulo(txtDescripcion.getText()));
-        producto.setUrlImagen(vacioComoNulo(txtUrlImagen.getText()));
+        producto.setCodigo(txtCodigo.getText());
+        producto.setNombre(txtNombre.getText());
+        producto.setMarca(Validador.vacioComoNulo(txtMarca.getText()));
+        producto.setCategoria(txtCategoria.getText());
+        producto.setColeccion(Validador.vacioComoNulo(txtColeccion.getText()));
+        producto.setTalla(Validador.vacioComoNulo(txtTalla.getText()));
+        producto.setDescripcion(Validador.vacioComoNulo(txtDescripcion.getText()));
+        producto.setUrlImagen(Validador.vacioComoNulo(txtUrlImagen.getText()));
         producto.setPrecio(precio);
         producto.setStockComercial(((Number) spinnerStockComercial.getValue()).intValue());
         producto.setStockMinimo(((Number) spinnerStockMinimo.getValue()).intValue());
@@ -508,7 +494,12 @@ public class GestionProductosJFrame extends JFrame {
         lblProd.setForeground(COLOR_TEXTO_MAIN);
         panel.add(lblProd);
 
-      String[] etiquetas = {"Tipo de stock:", "Cantidad (negativo para descontar):", "Motivo:"};
+        JLabel lblRegla = new JLabel("<html><i>El stock comprometido solo admite ingresos: está reservado para donación.</i></html>");
+        lblRegla.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        lblRegla.setForeground(COLOR_BURDEO);
+        panel.add(lblRegla);
+
+        String[] etiquetas = {"Tipo de stock:", "Cantidad (negativo para descontar):", "Motivo:"};
         JComponent[] componentes = {comboTipo, spinnerCantidad, txtMotivo};
 
         for (int i = 0; i < etiquetas.length; i++) {
@@ -543,10 +534,6 @@ public class GestionProductosJFrame extends JFrame {
 
     private String nvl(String valor) {
         return valor == null ? "" : valor;
-    }
-
-    private String vacioComoNulo(String valor) {
-        return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
     //

@@ -2,3 +2,7 @@ db.url=jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmod
 db.user=postgres.<PROJECT_REF>
 db.password=<TU_PASSWORD>
 db.pool.size=5
+
+# Portal público de consulta de impacto (equipo web). El QR de la boleta PDF
+# apunta a <esta URL>?donacion=<id>. Opcional: si se omite se usa la URL por defecto.
+portal.consulta.url=https://hosegstore.pe/consulta-impacto.html

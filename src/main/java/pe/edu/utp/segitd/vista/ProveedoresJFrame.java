@@ -6,6 +6,7 @@ import pe.edu.utp.segitd.modelo.PedidoProveedor;
 import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.Proveedor;
 import pe.edu.utp.segitd.servicio.ServicioException;
+import pe.edu.utp.segitd.util.Validador;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -179,9 +180,9 @@ public class ProveedoresJFrame extends JFrame {
         Proveedor proveedor = new Proveedor();
         proveedor.setId(idProveedorEnEdicion);
         proveedor.setNombreTaller(txtNombreTaller.getText().trim());
-        proveedor.setRuc(vacioComoNulo(txtRuc.getText()));
-        proveedor.setContacto(vacioComoNulo(txtContacto.getText()));
-        proveedor.setTelefono(vacioComoNulo(txtTelefono.getText()));
+        proveedor.setRuc(Validador.vacioComoNulo(txtRuc.getText()));
+        proveedor.setContacto(Validador.vacioComoNulo(txtContacto.getText()));
+        proveedor.setTelefono(Validador.vacioComoNulo(txtTelefono.getText()));
         proveedor.setActivo(true);
 
         try {
@@ -376,10 +377,6 @@ public class ProveedoresJFrame extends JFrame {
 
     private String nvl(String valor) {
         return valor == null ? "" : valor;
-    }
-
-    private String vacioComoNulo(String valor) {
-        return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
     private static final class ModeloProveedores extends AbstractTableModel {

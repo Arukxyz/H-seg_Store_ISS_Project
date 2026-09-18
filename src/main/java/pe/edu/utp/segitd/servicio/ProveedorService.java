@@ -12,6 +12,7 @@ import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.Proveedor;
 import pe.edu.utp.segitd.modelo.TipoMovimiento;
 import pe.edu.utp.segitd.modelo.TipoStock;
+import pe.edu.utp.segitd.util.Validador;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,9 +46,7 @@ public class ProveedorService {
     }
 
     public void crearProveedor(Proveedor proveedor) {
-        if (proveedor.getNombreTaller() == null || proveedor.getNombreTaller().isBlank()) {
-            throw new ServicioException("El nombre del taller es obligatorio.");
-        }
+        proveedor.setNombreTaller(Validador.obligatorio(proveedor.getNombreTaller(), "Nombre del taller"));
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             proveedorDAO.crear(proveedor, conexion);
         } catch (SQLException e) {
@@ -84,12 +83,8 @@ public class ProveedorService {
         if (idProveedor <= 0) {
             throw new ServicioException("Selecciona un proveedor.");
         }
-        if (descripcion == null || descripcion.isBlank()) {
-            throw new ServicioException("La descripción es obligatoria.");
-        }
-        if (cantidad <= 0) {
-            throw new ServicioException("La cantidad debe ser mayor a cero.");
-        }
+        descripcion = Validador.obligatorio(descripcion, "Descripción");
+        Validador.mayorQueCero(cantidad, "Cantidad");
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             PedidoProveedor pedido = new PedidoProveedor();
             pedido.setIdProveedor(idProveedor);

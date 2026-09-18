@@ -229,13 +229,11 @@ public class LoginJFrame extends JFrame {
 
         public PanelFondoImagen(String rutaIcono) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            try {
-                java.net.URL url = getClass().getResource(rutaIcono);
-                if (url != null) {
-                    this.imagen = new ImageIcon(url).getImage();
-                }
-            } catch (Exception e) {
-                System.out.println("No se pudo cargar la imagen, usando color plano.");
+            // Si el recurso no existe, imagen queda null y paintComponent
+            // usa el color plano: no hace falta avisar por consola.
+            java.net.URL url = getClass().getResource(rutaIcono);
+            if (url != null) {
+                this.imagen = new ImageIcon(url).getImage();
             }
         }
 
