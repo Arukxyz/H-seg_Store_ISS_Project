@@ -4,6 +4,8 @@ config.properties
 # Compilado / empaquetado
 target/
 *.class
+# Lo regenera maven-shade-plugin en cada package
+dependency-reduced-pom.xml
 
 # Reportes de impacto generados (RF-07)
 *.xlsx
