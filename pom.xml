@@ -21,6 +21,8 @@
         <poi.version>5.3.0</poi.version>
         <flatlaf.version>3.5.4</flatlaf.version>
         <hikaricp.version>5.1.0</hikaricp.version>
+        <pdfbox.version>3.0.3</pdfbox.version>
+        <zxing.version>3.5.3</zxing.version>
 
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
@@ -60,6 +62,18 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
+        </dependency>
+
+        <!-- Boleta digital en PDF con QR de trazabilidad (módulo 5) -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${zxing.version}</version>
         </dependency>
     </dependencies>
 

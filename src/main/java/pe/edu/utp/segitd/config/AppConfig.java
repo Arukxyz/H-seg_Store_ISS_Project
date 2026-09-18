@@ -16,6 +16,8 @@ public final class AppConfig {
 
     private static final String ARCHIVO_CONFIG = "config.properties";
     private static final int POOL_SIZE_POR_DEFECTO = 5;
+    /** Portal público de consulta de impacto (lo sirve el equipo web); el QR de la boleta apunta aquí. */
+    private static final String PORTAL_CONSULTA_URL_POR_DEFECTO = "https://hosegstore.pe/consulta-impacto.html";
 
     private static volatile AppConfig instancia;
 
@@ -23,6 +25,7 @@ public final class AppConfig {
     private final String dbUser;
     private final String dbPassword;
     private final int dbPoolSize;
+    private final String portalConsultaUrl;
 
     private AppConfig() {
         Properties propiedades = cargarPropiedades();
@@ -31,6 +34,8 @@ public final class AppConfig {
         this.dbUser = valorObligatorio("DB_USER", "db.user", propiedades);
         this.dbPassword = valorObligatorio("DB_PASSWORD", "db.password", propiedades);
         this.dbPoolSize = valorPoolSize(propiedades);
+        this.portalConsultaUrl = valorOpcional("PORTAL_CONSULTA_URL", "portal.consulta.url",
+                PORTAL_CONSULTA_URL_POR_DEFECTO, propiedades);
     }
 
     public static AppConfig obtenerInstancia() {
@@ -63,6 +68,10 @@ public final class AppConfig {
         return dbPoolSize;
     }
 
+    public String getPortalConsultaUrl() {
+        return portalConsultaUrl;
+    }
+
     private Properties cargarPropiedades() {
         Properties propiedades = new Properties();
         Path ruta = Path.of(ARCHIVO_CONFIG);
@@ -88,6 +97,14 @@ public final class AppConfig {
                             + "y completa sus valores.");
         }
         return valor;
+    }
+
+    private String valorOpcional(String variableEntorno, String clavePropiedad, String porDefecto, Properties propiedades) {
+        String valor = System.getenv(variableEntorno);
+        if (valor == null || valor.isBlank()) {
+            valor = propiedades.getProperty(clavePropiedad);
+        }
+        return valor == null || valor.isBlank() ? porDefecto : valor.trim();
     }
 
     private int valorPoolSize(Properties propiedades) {

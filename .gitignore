@@ -11,6 +11,9 @@ target/
 # Respaldos (RNF-05)
 backups/
 
+# Boletas PDF generadas (módulo 5)
+boletas/
+
 # IDEs
 .idea/
 *.iml

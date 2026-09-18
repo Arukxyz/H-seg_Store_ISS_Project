@@ -24,7 +24,7 @@ public final class VentaDAO {
     /** Lista pedidos web, filtrables por estado y rango de fechas (los tres filtros son opcionales). */
     public List<Venta> listarWeb(EstadoVenta estado, OffsetDateTime desde, OffsetDateTime hasta, Connection conexion) throws SQLException {
         StringBuilder sql = new StringBuilder("""
-                SELECT v.*, c.nombre AS cliente_nombre
+                SELECT v.*, c.nombre AS cliente_nombre, c.tipo_doc AS cliente_tipo_doc, c.num_doc AS cliente_num_doc
                   FROM venta v
                   LEFT JOIN cliente c ON c.id = v.id_cliente
                  WHERE v.origen = 'WEB'
@@ -63,7 +63,7 @@ public final class VentaDAO {
 
     public Optional<Venta> buscarPorId(int id, Connection conexion) throws SQLException {
         String sql = """
-                SELECT v.*, c.nombre AS cliente_nombre
+                SELECT v.*, c.nombre AS cliente_nombre, c.tipo_doc AS cliente_tipo_doc, c.num_doc AS cliente_num_doc
                   FROM venta v
                   LEFT JOIN cliente c ON c.id = v.id_cliente
                  WHERE v.id = ?
@@ -127,6 +127,8 @@ public final class VentaDAO {
         venta.setFecha(rs.getObject("fecha", OffsetDateTime.class));
         venta.setIdCliente((Integer) rs.getObject("id_cliente"));
         venta.setClienteNombre(rs.getString("cliente_nombre"));
+        venta.setClienteTipoDoc(rs.getString("cliente_tipo_doc"));
+        venta.setClienteNumDoc(rs.getString("cliente_num_doc"));
         venta.setIdUsuario((Integer) rs.getObject("id_usuario"));
         venta.setOrigen(OrigenVenta.valueOf(rs.getString("origen")));
         venta.setEstado(EstadoVenta.valueOf(rs.getString("estado")));

@@ -4,16 +4,19 @@ import pe.edu.utp.segitd.modelo.DetalleVenta;
 import pe.edu.utp.segitd.modelo.Donacion;
 import pe.edu.utp.segitd.modelo.EstadoVenta;
 import pe.edu.utp.segitd.modelo.Venta;
+import pe.edu.utp.segitd.servicio.BoletaService;
 import pe.edu.utp.segitd.servicio.PedidoWebService;
 import pe.edu.utp.segitd.util.SesionUsuario;
 
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/** Traduce los eventos de PedidosWebJFrame a llamadas de PedidoWebService. */
+/** Traduce los eventos de PedidosWebJFrame a llamadas de PedidoWebService y BoletaService. */
 public class PedidosWebControlador {
 
     private final PedidoWebService pedidoWebService = new PedidoWebService();
+    private final BoletaService boletaService = new BoletaService();
 
     public List<Venta> listarPedidos(EstadoVenta estado, OffsetDateTime desde, OffsetDateTime hasta) {
         return pedidoWebService.listarPedidos(estado, desde, hasta);
@@ -35,5 +38,10 @@ public class PedidosWebControlador {
     public void anularPedido(int idVenta) {
         int idUsuario = SesionUsuario.obtenerInstancia().getUsuarioActual().getId();
         pedidoWebService.anularPedido(idVenta, idUsuario);
+    }
+
+    /** Módulo 5: genera la boleta PDF con QR de trazabilidad y devuelve el archivo creado. */
+    public File emitirBoleta(int idVenta) {
+        return boletaService.emitirBoleta(idVenta);
     }
 }
