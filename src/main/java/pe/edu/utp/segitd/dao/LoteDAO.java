@@ -1,6 +1,7 @@
 package pe.edu.utp.segitd.dao;
 
 import pe.edu.utp.segitd.modelo.EstadoLote;
+import pe.edu.utp.segitd.modelo.FilaHistorialDespacho;
 import pe.edu.utp.segitd.modelo.LoteDonacion;
 
 import java.sql.Connection;
@@ -104,6 +105,75 @@ public final class LoteDAO {
              ResultSet rs = ps.executeQuery()) {
             rs.next();
             return rs.getInt(1);
+        }
+    }
+
+    /**
+     * Historial cronológico de lotes ENTREGADOS para el reporte de impacto
+     * (RF-07), con el consolidado de donaciones que llevaba cada uno. Los
+     * filtros son opcionales; las fechas se aplican sobre fecha_despacho.
+     */
+    public List<FilaHistorialDespacho> listarHistorialDespachos(OffsetDateTime desde, OffsetDateTime hasta,
+                                                                Integer idComunidad, Connection conexion) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
+                SELECT l.codigo_lote, c.nombre AS comunidad_nombre, c.distrito, c.provincia,
+                       o.nombre AS ong_nombre, u.nombre AS responsable_nombre,
+                       l.fecha_creacion, l.fecha_despacho, l.estado,
+                       COUNT(d.id)                                              AS donaciones,
+                       COALESCE(SUM(d.cantidad) FILTER (WHERE d.tipo = 'ABRIGO'), 0) AS prendas_abrigo,
+                       COALESCE(SUM(d.cantidad) FILTER (WHERE d.tipo = 'ARBOL'),  0) AS arboles
+                  FROM lote_donacion l
+                  JOIN comunidad c ON c.id = l.id_comunidad
+                  JOIN ong o       ON o.id = l.id_ong
+                  LEFT JOIN usuario u  ON u.id = l.id_usuario_responsable
+                  LEFT JOIN donacion d ON d.id_lote = l.id
+                 WHERE l.estado = 'ENTREGADO'
+                """);
+        if (desde != null) {
+            sql.append(" AND l.fecha_despacho >= ?");
+        }
+        if (hasta != null) {
+            sql.append(" AND l.fecha_despacho <= ?");
+        }
+        if (idComunidad != null) {
+            sql.append(" AND l.id_comunidad = ?");
+        }
+        sql.append("""
+                 GROUP BY l.id, l.codigo_lote, c.nombre, c.distrito, c.provincia, o.nombre, u.nombre,
+                          l.fecha_creacion, l.fecha_despacho, l.estado
+                 ORDER BY l.fecha_despacho ASC
+                """);
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
+            int indice = 1;
+            if (desde != null) {
+                ps.setObject(indice++, desde);
+            }
+            if (hasta != null) {
+                ps.setObject(indice++, hasta);
+            }
+            if (idComunidad != null) {
+                ps.setInt(indice++, idComunidad);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                List<FilaHistorialDespacho> resultado = new ArrayList<>();
+                while (rs.next()) {
+                    resultado.add(new FilaHistorialDespacho(
+                            rs.getString("codigo_lote"),
+                            rs.getString("comunidad_nombre"),
+                            rs.getString("distrito"),
+                            rs.getString("provincia"),
+                            rs.getString("ong_nombre"),
+                            rs.getString("responsable_nombre"),
+                            rs.getObject("fecha_creacion", OffsetDateTime.class),
+                            rs.getObject("fecha_despacho", OffsetDateTime.class),
+                            EstadoLote.valueOf(rs.getString("estado")),
+                            rs.getInt("donaciones"),
+                            rs.getInt("prendas_abrigo"),
+                            rs.getInt("arboles")));
+                }
+                return resultado;
+            }
         }
     }
 

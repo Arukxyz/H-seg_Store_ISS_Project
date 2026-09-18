@@ -12,7 +12,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Acceso a datos de donación: la tabla bisagra entre una línea de venta
@@ -173,11 +175,14 @@ public final class DonacionDAO {
                   LEFT JOIN comunidad c ON c.id = l.id_comunidad
                  WHERE 1 = 1
                 """);
+        // Se filtra por fecha de VENTA: la hoja responde "qué pasó con las
+        // ventas de este periodo", por eso una donación puede aparecer aún
+        // PENDIENTE o ASIGNADA. Lo entregado en el periodo va en el historial.
         if (desde != null) {
-            sql.append(" AND l.fecha_despacho >= ?");
+            sql.append(" AND v.fecha >= ?");
         }
         if (hasta != null) {
-            sql.append(" AND l.fecha_despacho <= ?");
+            sql.append(" AND v.fecha <= ?");
         }
         if (idComunidad != null) {
             sql.append(" AND l.id_comunidad = ?");
@@ -212,6 +217,37 @@ public final class DonacionDAO {
                 return resultado;
             }
         }
+    }
+
+    /**
+     * Cuántas donaciones (unidades) generaron las ventas del periodo, por
+     * estado. Compara contra ResumenVentas.unidadesConCompromiso: si la
+     * regla "una prenda vendida = una donación" se cumple, coinciden.
+     */
+    public Map<EstadoDonacion, Integer> contarUnidadesPorEstado(OffsetDateTime desde, OffsetDateTime hasta,
+                                                                Connection conexion) throws SQLException {
+        String sql = """
+                SELECT d.estado, COALESCE(SUM(d.cantidad), 0) AS unidades
+                  FROM donacion d
+                  JOIN detalle_venta dv ON dv.id = d.id_detalle_venta
+                  JOIN venta v          ON v.id = dv.id_venta
+                 WHERE v.fecha >= ? AND v.fecha <= ?
+                 GROUP BY d.estado
+                """;
+        Map<EstadoDonacion, Integer> resultado = new EnumMap<>(EstadoDonacion.class);
+        for (EstadoDonacion estado : EstadoDonacion.values()) {
+            resultado.put(estado, 0);
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, desde);
+            ps.setObject(2, hasta);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resultado.put(EstadoDonacion.valueOf(rs.getString("estado")), rs.getInt("unidades"));
+                }
+            }
+        }
+        return resultado;
     }
 
     private Donacion mapear(ResultSet rs) throws SQLException {
