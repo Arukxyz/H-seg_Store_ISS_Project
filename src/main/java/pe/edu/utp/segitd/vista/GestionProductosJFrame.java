@@ -508,7 +508,12 @@ public class GestionProductosJFrame extends JFrame {
         lblProd.setForeground(COLOR_TEXTO_MAIN);
         panel.add(lblProd);
 
-      String[] etiquetas = {"Tipo de stock:", "Cantidad (negativo para descontar):", "Motivo:"};
+        JLabel lblRegla = new JLabel("<html><i>El stock comprometido solo admite ingresos: está reservado para donación.</i></html>");
+        lblRegla.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        lblRegla.setForeground(COLOR_BURDEO);
+        panel.add(lblRegla);
+
+        String[] etiquetas = {"Tipo de stock:", "Cantidad (negativo para descontar):", "Motivo:"};
         JComponent[] componentes = {comboTipo, spinnerCantidad, txtMotivo};
 
         for (int i = 0; i < etiquetas.length; i++) {
