@@ -31,6 +31,7 @@ INSERT INTO ong (nombre, contacto, telefono) VALUES
 INSERT INTO comunidad (nombre, distrito, provincia, region) VALUES
     ('Omacha',      'Omacha',      'Paruro',       'Cusco'),
     ('Ccatca',      'Ccatca',      'Quispicanchi', 'Cusco'),
+    ('Marcapata',   'Marcapata',   'Quispicanchi', 'Cusco'),
     ('Paucartambo', 'Paucartambo', 'Paucartambo',  'Cusco'),
     ('Layo',        'Layo',        'Canas',        'Cusco');
 
