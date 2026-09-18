@@ -21,6 +21,7 @@ Ejecutar en el SQL Editor de Supabase, en este orden:
 | `src/main/resources/sql/03_datos_adicionales.sql` | Más productos y pedidos en distintos estados, lotes y donaciones para la demo |
 | `src/main/resources/sql/04_comunidad_marcapata.sql` | Solo para bases cargadas antes de que Marcapata estuviera en `02` (idempotente) |
 | `src/main/resources/sql/05_correccion_fechas_lotes.sql` | Solo para bases cargadas con una versión anterior de `03` (idempotente, incluye consultas de verificación) |
+| `src/main/resources/sql/06_web_clientes.sql` | Requisito del portal web (Spring Boot): columnas de autenticación en `cliente`, secuencia de comprobantes `WEB-nnnnnn` e índice para la consulta de impacto (idempotente) |
 
 Los hashes de contraseña de `02` se generan con `GeneradorHash` (`mvn compile exec:java -Dexec.mainClass=pe.edu.utp.segitd.util.GeneradorHash`), nunca a mano.
 
