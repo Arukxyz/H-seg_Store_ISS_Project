@@ -125,14 +125,27 @@ public class GestionProductosJFrame extends JFrame {
     private JPanel construirPanelTabla() {
         tabla.setDefaultRenderer(Object.class, new ResaltadoStockBajoRenderer());
         tabla.setRowHeight(28);
-        //aqui afecta¿
+        
         tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tabla.setSelectionBackground(new Color(0xE2, 0xE8, 0xF0));
         tabla.setSelectionForeground(COLOR_TEXTO_MAIN);
         tabla.setShowVerticalLines(false); 
         tabla.setGridColor(new Color(0xE2, 0xE2, 0xE0));
        
-       
+       tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        if (tabla.getColumnModel().getColumnCount() >= 7) { 
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(95);  // Código
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(160); // Nombre (Más ancho)
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(100); // Categoría
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(60);  // Talla
+        tabla.getColumnModel().getColumn(4).setPreferredWidth(80);  // Precio
+        tabla.getColumnModel().getColumn(5).setPreferredWidth(100); // Stock Comercial
+        tabla.getColumnModel().getColumn(6).setPreferredWidth(100); // Stock Comprometido
+        tabla.getColumnModel().getColumn(7).setPreferredWidth(100); // Stock Mínimo
+        
+    }
+
         //cabecera tabla
         JTableHeader header = tabla.getTableHeader();
         header.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -153,6 +166,8 @@ public class GestionProductosJFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(tabla);
         scrollPane.setBorder(new LineBorder(new Color(0xE2, 0xE2, 0xE0), 1));
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JLabel leyenda = new JLabel("● Las filas en fondo rojizo tienen el stock comercial en el mínimo o por debajo.");
