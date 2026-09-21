@@ -28,10 +28,13 @@ public class MenuPrincipalJFrame extends JFrame {
 
     private final JLabel indicadorConexion = new JLabel();
     private final JLabel valorProductosActivos = new JLabel("-");
-    private final JLabel valorBajoStock = new JLabel("-");
     private final JLabel valorPedidosPendientes = new JLabel("-");
     private final JLabel valorDonacionesPendientes = new JLabel("-");
-    private final JLabel valorLotesEnRuta = new JLabel("-");
+    
+    private final JProgressBar barraStockCritico = new JProgressBar(0, 100);
+    private final JProgressBar barraLotesRuta = new JProgressBar(0, 100);
+    private final JLabel lblNumStockCritico = new JLabel("0");
+    private final JLabel lblNumLotesRuta = new JLabel("0");
 
     // CONSTANTES DE DISEÑO 
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema neutro muy suave
@@ -56,7 +59,7 @@ public class MenuPrincipalJFrame extends JFrame {
         panelRaiz.setBackground(COLOR_FONDO_VENTANA);
         setContentPane(panelRaiz);
         
-        setMinimumSize(new Dimension(880, 520)); 
+        setMinimumSize(new Dimension(980, 560)); 
         this.getContentPane().setBackground(COLOR_FONDO_VENTANA);
         pack();
         setLocationRelativeTo(null);
@@ -136,38 +139,103 @@ public class MenuPrincipalJFrame extends JFrame {
     }
 
     private JPanel construirIndicadores() {
-        JPanel panel = new JPanel(new GridLayout(1, 5, 14, 14));
-        panel.setBackground(COLOR_FONDO_VENTANA);
+
+        JPanel contenedorControles = new JPanel(new BorderLayout(16, 0));
+        contenedorControles.setBackground(COLOR_FONDO_VENTANA);
+
+        JPanel panelTarjetasIzquierda = new JPanel(new GridLayout(1, 3, 14, 0));
+        panelTarjetasIzquierda.setBackground(COLOR_FONDO_VENTANA);
         
-        panel.add(tarjeta("Productos activos", valorProductosActivos));
-        panel.add(tarjeta("Bajo stock mínimo", valorBajoStock));
-        panel.add(tarjeta("Pedidos web pendientes", valorPedidosPendientes));
-        panel.add(tarjeta("Donaciones por asignar", valorDonacionesPendientes));
-        panel.add(tarjeta("Lotes en ruta", valorLotesEnRuta));
-        return panel;
+        panelTarjetasIzquierda.add(tarjeta("Productos activos", valorProductosActivos, new Color(0x00, 0x33, 0xAA))); // Barra Azul
+        panelTarjetasIzquierda.add(tarjeta("Pedidos web pendientes", valorPedidosPendientes, new Color(0x6A, 0x1B, 0x9A))); // Barra Morada
+        panelTarjetasIzquierda.add(tarjeta("Donaciones por asignar", valorDonacionesPendientes, new Color(0x2E, 0x7D, 0x32))); // Barra Verde
+        
+        contenedorControles.add(panelTarjetasIzquierda, BorderLayout.CENTER);
+        
+        // Lado Derecho
+        JPanel panelGraficoDerecha = new JPanel(new BorderLayout());
+        panelGraficoDerecha.setBackground(Color.WHITE);
+        panelGraficoDerecha.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(0xE5, 0xE5, 0xE3), 1),
+                BorderFactory.createEmptyBorder(12, 16, 12, 16)));
+
+        JLabel tituloGrafico = new JLabel("Estado de Almacén y Logística", SwingConstants.LEFT);
+        tituloGrafico.setFont(new Font("SansSerif", Font.BOLD, 13));
+        tituloGrafico.setForeground(COLOR_TEXTO_MAIN);
+        panelGraficoDerecha.add(tituloGrafico, BorderLayout.NORTH);
+
+        JPanel cuerpoGrafico = new JPanel(new GridLayout(2, 1, 0, 10));
+        cuerpoGrafico.setBackground(Color.WHITE);
+        cuerpoGrafico.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+
+        barraStockCritico.setForeground(COLOR_BURDEO);
+        barraStockCritico.setBackground(new Color(0xF5, 0xF5, 0xF5));
+        barraStockCritico.setBorderPainted(false);
+        
+        barraLotesRuta.setForeground(new Color(0x00, 0x33, 0xAA));
+        barraLotesRuta.setBackground(new Color(0xF5, 0xF5, 0xF5));
+        barraLotesRuta.setBorderPainted(false);
+        
+        JPanel fila1 = new JPanel(new BorderLayout(10, 0));
+        fila1.setBackground(Color.WHITE);
+        JLabel lblEtiq1 = new JLabel("Productos Críticos:");
+        lblEtiq1.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        lblEtiq1.setPreferredSize(new Dimension(110, 20));
+        lblNumStockCritico.setFont(new Font("SansSerif", Font.BOLD, 12));
+        fila1.add(lblEtiq1, BorderLayout.WEST);
+        fila1.add(barraStockCritico, BorderLayout.CENTER);
+        fila1.add(lblNumStockCritico, BorderLayout.EAST);
+        
+        JPanel fila2 = new JPanel(new BorderLayout(10, 0));
+        fila2.setBackground(Color.WHITE);
+        JLabel lblEtiq2 = new JLabel("Lotes en Ruta:");
+        lblEtiq2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        lblEtiq2.setPreferredSize(new Dimension(110, 20));
+        lblNumLotesRuta.setFont(new Font("SansSerif", Font.BOLD, 12));
+        fila2.add(lblEtiq2, BorderLayout.WEST);
+        fila2.add(barraLotesRuta, BorderLayout.CENTER);
+        fila2.add(lblNumLotesRuta, BorderLayout.EAST);
+
+        cuerpoGrafico.add(fila1);
+        cuerpoGrafico.add(fila2);
+        
+        panelGraficoDerecha.add(cuerpoGrafico, BorderLayout.CENTER);
+        panelGraficoDerecha.setPreferredSize(new Dimension(320, 100));
+        
+        contenedorControles.add(panelGraficoDerecha, BorderLayout.EAST);
+        return contenedorControles;
     }
 
-    private JPanel tarjeta(String etiqueta, JLabel valor) {
-        JPanel tarjeta = new JPanel(new BorderLayout(8, 8));
-        tarjeta.setBackground(Color.WHITE); 
-        
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new javax.swing.border.LineBorder(new Color(0xE5, 0xE5, 0xE3), 1),
-                BorderFactory.createEmptyBorder(20, 10, 20, 10)));
-        
-        valor.setFont(FUENTE_INDICADOR_NUM);
-        valor.setForeground(COLOR_PRIMARIO); 
-        valor.setHorizontalAlignment(SwingConstants.CENTER); 
+    private JPanel tarjeta(String etiqueta, JLabel valor, Color colorAcento) {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setBackground(Color.WHITE);
+        wrapper.setBorder(new LineBorder(new Color(0xE5, 0xE5, 0xE3), 1));
 
-       JLabel descripcion = new JLabel("<html><center>" + etiqueta + "</center></html>", SwingConstants.CENTER);
-        descripcion.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JPanel barraInferior = new JPanel();
+        barraInferior.setBackground(colorAcento);
+        barraInferior.setPreferredSize(new Dimension(10, 4));
+        wrapper.add(barraInferior, BorderLayout.SOUTH);
+
+        JPanel cuerpoTarjeta = new JPanel(new BorderLayout(6, 6));
+        cuerpoTarjeta.setBackground(Color.WHITE);
+        cuerpoTarjeta.setBorder(BorderFactory.createEmptyBorder(16, 10, 12, 10));
+
+        valor.setFont(FUENTE_INDICADOR_NUM);
+        valor.setForeground(COLOR_PRIMARIO);
+        valor.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        JLabel descripcion = new JLabel("<html><center>" + etiqueta + "</center></html>", SwingConstants.CENTER);
+        descripcion.setFont(new Font("SansSerif", Font.PLAIN, 12));
         descripcion.setForeground(COLOR_GRIS_TEXTO);
         
-        tarjeta.add(valor, BorderLayout.CENTER);
-        tarjeta.add(descripcion, BorderLayout.SOUTH);
-        return tarjeta;
+        cuerpoTarjeta.add(valor, BorderLayout.CENTER);
+        cuerpoTarjeta.add(descripcion, BorderLayout.SOUTH);
+        
+        wrapper.add(cuerpoTarjeta, BorderLayout.CENTER);
+        return wrapper;
     }
 
+    ///////////////////////////////////777
     private JPanel construirModulos() {
         JPanel panel = new JPanel(new GridLayout(2, 3, 14, 14));
         panel.setBackground(COLOR_FONDO_VENTANA);
@@ -260,7 +328,7 @@ public class MenuPrincipalJFrame extends JFrame {
         return boton;
     }
 
-    private void actualizarPanel() {
+     private void actualizarPanel() {
         boolean conectado = controlador.verificarConexion();
         indicadorConexion.setText(conectado ? "● Conectado" : "● Sin conexión");
         indicadorConexion.setForeground(conectado ? new Color(0x2E, 0x7D, 0x32) : new Color(0xB0, 0x00, 0x20));
@@ -272,23 +340,36 @@ public class MenuPrincipalJFrame extends JFrame {
 
         try {
             IndicadoresDashboard indicadores = controlador.cargarIndicadores();
+            
             valorProductosActivos.setText(String.valueOf(indicadores.productosActivos()));
-            valorBajoStock.setText(String.valueOf(indicadores.productosBajoStockMinimo()));
             valorPedidosPendientes.setText(String.valueOf(indicadores.pedidosWebPendientes()));
             valorDonacionesPendientes.setText(String.valueOf(indicadores.donacionesPendientes()));
-            valorLotesEnRuta.setText(String.valueOf(indicadores.lotesEnRuta()));
+            
+            int bajoStock = indicadores.productosBajoStockMinimo();
+            int lotesRuta = indicadores.lotesEnRuta();
+            
+            lblNumStockCritico.setText(String.valueOf(bajoStock));
+            lblNumLotesRuta.setText(String.valueOf(lotesRuta));
+            
+            barraStockCritico.setValue(Math.min(100, (bajoStock * 100) / 10));
+            barraLotesRuta.setValue(Math.min(100, (lotesRuta * 100) / 10));
+            
         } catch (ServicioException e) {
             limpiarIndicadores();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void limpiarIndicadores() {
+     private void limpiarIndicadores() {
         valorProductosActivos.setText("-");
-        valorBajoStock.setText("-");
         valorPedidosPendientes.setText("-");
         valorDonacionesPendientes.setText("-");
-        valorLotesEnRuta.setText("-");
+        
+        lblNumStockCritico.setText("0");
+        lblNumLotesRuta.setText("0");
+        
+        barraStockCritico.setValue(0);
+        barraLotesRuta.setValue(0);
     }
 
     private void cerrarSesion() {
