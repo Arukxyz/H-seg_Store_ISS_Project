@@ -23,6 +23,7 @@ public class AuthService {
 
     public Usuario autenticar(String username, char[] password) {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
+            
             Usuario usuario = usuarioDAO.buscarPorUsername(username, conexion)
                     .orElseThrow(() -> new ServicioException("Usuario o contraseña incorrectos."));
 
@@ -55,8 +56,16 @@ public class AuthService {
     }
 
     private void registrarIntentoFallido(Usuario usuario, Connection conexion) throws SQLException {
-        int intentos = usuario.getIntentosFallidos() + 1;
-        int minutosBloqueo = intentos >= MAX_INTENTOS_FALLIDOS ? MINUTOS_BLOQUEO : 0;
-        usuarioDAO.registrarIntentoFallido(usuario.getId(), intentos, minutosBloqueo, conexion);
+    int intentos = usuario.getIntentosFallidos() + 1;
+    int minutosBloqueo = intentos >= MAX_INTENTOS_FALLIDOS ? MINUTOS_BLOQUEO : 0;
+    
+    usuarioDAO.registrarIntentoFallido(usuario.getId(), intentos, minutosBloqueo, conexion);
+
+    if (intentos >= MAX_INTENTOS_FALLIDOS) {
+        throw new ServicioException(
+            "Has superado el límite de intentos. Usuario bloqueado temporalmente por " + MINUTOS_BLOQUEO + " minutos."
+        );
     }
+}
+
 }

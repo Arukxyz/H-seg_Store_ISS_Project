@@ -6,7 +6,7 @@ import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
 
 import java.util.Arrays;
-
+import javax.swing.JOptionPane; 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -205,7 +205,19 @@ public class LoginJFrame extends JFrame {
             SesionUsuario.obtenerInstancia().iniciarSesion(autenticado);
             abrirMenuPrincipal();
         } catch (ServicioException ex) {
-            mostrarMensaje(ex.getMessage());
+            String mensajeError = ex.getMessage();
+             if (mensajeError.toLowerCase().contains("bloqueado")) {
+            JOptionPane.showMessageDialog(
+                this, 
+                mensajeError, 
+                "Acceso Bloqueado", 
+                JOptionPane.ERROR_MESSAGE
+            );
+            mostrarMensaje("Usuario bloqueado."); 
+        } else {
+           
+            mostrarMensaje(mensajeError);
+        }
         } finally {
             Arrays.fill(password, '\0');
             botonIngresar.setEnabled(true);
