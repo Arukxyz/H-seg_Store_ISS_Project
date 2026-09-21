@@ -273,7 +273,6 @@ public class ReportesImpactoJFrame extends JFrame {
             org.apache.pdfbox.pdmodel.font.PDFont fuenteNormal = new org.apache.pdfbox.pdmodel.font.PDType1Font(org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.TIMES_ROMAN);
 
             try (org.apache.pdfbox.pdmodel.PDPageContentStream contenido = new org.apache.pdfbox.pdmodel.PDPageContentStream(documento, pagina)) {
-                // Marco Estético Fondo
                 contenido.setNonStrokingColor(0.96f, 0.96f, 0.95f);
                 contenido.addRect(20, 20, 572, 752);
                 contenido.fill();
@@ -282,12 +281,10 @@ public class ReportesImpactoJFrame extends JFrame {
                 contenido.addRect(40, 40, 532, 712);
                 contenido.fill();
 
-                // Barra Superior Verde Corporativa
                 contenido.setNonStrokingColor(0.17f, 0.22f, 0.20f);
                 contenido.addRect(40, 742, 532, 10);
                 contenido.fill();
 
-                // Encabezados principales
                 contenido.beginText();
                 contenido.setFont(fuenteBold, 22);
                 contenido.setNonStrokingColor(0.10f, 0.10f, 0.10f);
@@ -316,7 +313,7 @@ public class ReportesImpactoJFrame extends JFrame {
                 contenido.showText("ONG PACHAMAMA RAYMI");
                 contenido.endText();
 
-                // Declaratoria legal
+                
                 int y = 550;
                 String[] parrafos = {
                     "Como constancia inmutable del impacto social y ecologico generado en las comunidades",
@@ -334,10 +331,7 @@ public class ReportesImpactoJFrame extends JFrame {
                     y -= 18;
                 }
 
-                // =========================================================================
-                // 🚀 CÁLCULO DINÁMICO HISTÓRICO BASADO EN TU CATÁLOGO REAL DE SUPABASE
-                // =========================================================================
-                int productosActivos = 15; 
+               int productosActivos = 15; 
                 for (Window w : Window.getWindows()) {
                     if (w instanceof MenuPrincipalJFrame && w.isVisible()) {
                         try {
@@ -350,9 +344,7 @@ public class ReportesImpactoJFrame extends JFrame {
 
                 int totalLotesHistoricos = productosActivos * 2; 
                 int totalPrendasValidadas = totalLotesHistoricos * 120; 
-                // =========================================================================
 
-                // Cuadro Resumen Analítico (Ampliado un poco hacia abajo para que entren 3 líneas)
                 contenido.setNonStrokingColor(0.97f, 0.97f, 0.98f);
                 contenido.addRect(60, 335, 492, 110);
                 contenido.fill();
@@ -370,21 +362,18 @@ public class ReportesImpactoJFrame extends JFrame {
                 contenido.showText(". Entidad Beneficiaria: ONG Pachamama Raymi");
                 contenido.endText();
 
-                // Línea 2: Lotes acumulados históricos
                 contenido.beginText();
                 contenido.setFont(fuenteNormal, 11);
                 contenido.newLineAtOffset(80, 380);
                 contenido.showText(". Lotes de Abrigo Auditados (Historico): " + totalLotesHistoricos + " Lotes");
                 contenido.endText();
 
-                // Línea 3: Total prendas físicas calculadas
                 contenido.beginText();
                 contenido.setFont(fuenteNormal, 11);
                 contenido.newLineAtOffset(80, 360);
                 contenido.showText(". Total Prendas de Abrigo Entregadas : " + totalPrendasValidadas + " Unidades (Validado)");
                 contenido.endText();
 
-                // Datos de Validación
                 contenido.beginText();
                 contenido.setFont(fuenteNormal, 10);
                 contenido.setNonStrokingColor(0.47f, 0.47f, 0.47f);
@@ -398,7 +387,6 @@ public class ReportesImpactoJFrame extends JFrame {
                 contenido.showText("Codigo Unico de Auditoria: " + codigoValidacion);
                 contenido.endText();
 
-                // Dibujado del QR dinámico
                 String textoQR = "METRICA TRIPLE IMPACTO HOSEG\nONG: Pachamama Raymi\nCodigo: " + codigoValidacion + "\nEmision: " + fechaEmision;
                 com.google.zxing.qrcode.QRCodeWriter qrCodeWriter = new com.google.zxing.qrcode.QRCodeWriter();
                 com.google.zxing.common.BitMatrix bitMatrix = qrCodeWriter.encode(textoQR, com.google.zxing.BarcodeFormat.QR_CODE, 120, 120);
