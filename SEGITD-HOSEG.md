@@ -367,11 +367,11 @@ Ninguna sentencia SQL fuera de `dao`. Ninguna regla de negocio dentro de un `act
 </dependencies>
 ```
 
-Todas las versiones deben ser las últimas estables compatibles con JDK 21. Apache POI requiere 5.2.0 o superior para compilar sin advertencias en 21; FlatLaf 3.x y HikariCP 5.x son compatibles sin ajustes.
+Todas las versiones deben ser las últimas estables compatibles con JDK 25. Apache POI requiere 5.2.0 o superior para compilar sin advertencias en 25; FlatLaf 3.x y HikariCP 5.x son compatibles sin ajustes.
 
-Plugins: `maven-compiler-plugin` (Java 21, usando `<maven.compiler.release>21</maven.compiler.release>` en `<properties>`, no `source`/`target`) y **`maven-shade-plugin`** con `mainClass = pe.edu.utp.segitd.App` — sin shade no hay `.jar` único y no se cumple RNF-04.
+Plugins: `maven-compiler-plugin` (Java 25, usando `<maven.compiler.release>25</maven.compiler.release>` en `<properties>`, no `source`/`target`) y **`maven-shade-plugin`** con `mainClass = pe.edu.utp.segitd.App` — sin shade no hay `.jar` único y no se cumple RNF-04.
 
-Al empaquetar con shade sobre JDK 21 pueden aparecer advertencias de firmas duplicadas por los módulos de POI; se resuelven excluyendo `META-INF/*.SF`, `*.DSA` y `*.RSA` en la configuración del plugin.
+Al empaquetar con shade sobre JDK 25 pueden aparecer advertencias de firmas duplicadas por los módulos de POI; se resuelven excluyendo `META-INF/*.SF`, `*.DSA` y `*.RSA` en la configuración del plugin.
 
 ---
 
@@ -533,7 +533,7 @@ El código debe permitir ejecutar esta secuencia de principio a fin:
 
 ## 13. Convenciones
 
-- **JDK 21 (LTS)**, codificación UTF-8. Verificar con `java -version` que el JDK instalado sea 21 antes de compilar; NetBeans debe tener la plataforma Java 21 seleccionada en las propiedades del proyecto.
+- **JDK 25 (LTS)**, codificación UTF-8. Verificar con `java -version` que el JDK instalado sea 25 antes de compilar; NetBeans debe tener la plataforma Java 25 seleccionada en las propiedades del proyecto.
 - Características de Java 21 que conviene aprovechar (sin forzarlas):
   - `record` para los DTO de reportes y para los resultados de consultas agregadas (los modelos de entidad siguen siendo clases normales, porque necesitan setters para los DAO).
   - `switch` con patrones y expresiones de switch para las transiciones de estado de lotes, donaciones y ventas.

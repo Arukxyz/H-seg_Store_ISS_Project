@@ -2,11 +2,11 @@
 
 Back-office administrativo de Höség Store (14-DIEZ S.A.C.): inventario dual, pedidos web, lotes de donación, despacho a comunidades de Cusco, reportes de impacto, boleta digital con QR, proveedores y usuarios.
 
-Java 21 + Swing (FlatLaf) + JDBC, conectado a PostgreSQL en Supabase Cloud. Ver [SEGITD-HOSEG.md](SEGITD-HOSEG.md) para la especificación completa.
+Java 25 + Swing (FlatLaf) + JDBC, conectado a PostgreSQL en Supabase Cloud. Ver [SEGITD-HOSEG.md](SEGITD-HOSEG.md) para la especificación completa.
 
 ## Requisitos
 
-- JDK 21
+- JDK 25
 - Maven 3.9+
 - Un proyecto de Supabase con los scripts SQL ejecutados (ver abajo)
 
