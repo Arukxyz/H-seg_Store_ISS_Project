@@ -19,11 +19,14 @@ import java.util.List;
 
 /**
  * Genera el reporte de stock (RF-03) en su propio archivo .xlsx,
- * Tres hojas: "Sin stock", "Críticos"  y "Disponibles" (incluye próximos a agotar, resaltados).
+ * independiente del Excel de trazabilidad/inventario ({@link ExcelExporter},
+ * RF-07). Tres hojas: "Sin stock", "Críticos" y "Disponibles" (incluye
+ * próximos a crítico, resaltados en ámbar).
  */
 public final class ReporteStockExcelExporter {
 
-    private static final DateTimeFormatter FORMATO_ARCHIVO = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+    /** dd-MM-yyyy_HH-mm en vez de dígitos pegados, para que el nombre se lea bien. */
+    private static final DateTimeFormatter FORMATO_ARCHIVO = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm");
 
     public File exportar(List<FilaReporteStock> sinStock, List<FilaReporteStock> criticos,
                           List<FilaReporteStock> disponibles) throws IOException {
@@ -61,7 +64,7 @@ public final class ReporteStockExcelExporter {
         autoajustarColumnas(hoja, 6);
     }
 
-    /** Ya llega ordenada de menor a mayor stock comercial (ver ReporteStockService). */
+    /** Ya llega ordenada de menor a mayor margen (stock comercial - stock mínimo). */
     private void escribirHojaCriticos(Workbook libro, CellStyle estiloEncabezado, CellStyle estiloCritico,
                                        List<FilaReporteStock> filas) {
         Sheet hoja = libro.createSheet("Críticos");
@@ -85,6 +88,7 @@ public final class ReporteStockExcelExporter {
         autoajustarColumnas(hoja, 7);
     }
 
+    /** Ya llega ordenada de menor a mayor margen (stock comercial - stock mínimo). */
     private void escribirHojaDisponibles(Workbook libro, CellStyle estiloEncabezado, CellStyle estiloProximo,
                                           List<FilaReporteStock> filas) {
         Sheet hoja = libro.createSheet("Disponibles");

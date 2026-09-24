@@ -12,7 +12,29 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-
+/**
+ * Clasifica el catálogo activo según su nivel de stock comercial (RF-03) en
+ * tres grupos independientes:
+ *
+ * <ul>
+ *   <li>{@code sinStock}: no quedan unidades comerciales (stock = 0).</li>
+ *   <li>{@code criticos}: el stock está en el mínimo configurado o por
+ *       debajo.</li>
+ *   <li>{@code disponibles}: el resto (incluye {@code PROXIMO_A_AGOTAR} y
+ *       {@code DISPONIBLE}).</li>
+ * </ul>
+ *
+ * Tanto "críticos" como "disponibles" se ordenan por el <b>margen</b> sobre
+ * el mínimo ({@code stockComercial - stockMinimo}), de menor a mayor — no
+ * por el stock comercial en bruto. Así, un producto con margen 4 se prioriza
+ * antes que uno con margen 5, aunque este último tenga menos unidades en
+ * términos absolutos: lo que importa es qué tan cerca está de su propio
+ * mínimo, no la cantidad pura.
+ *
+ * El margen de "próximo a crítico" ({@link #MARGEN_PROXIMO_A_AGOTAR_UNIDADES})
+ * es puramente interno: no se muestra ningún número en la interfaz, solo el
+ * resaltado ámbar y la etiqueta de estado.
+ */
 public class ReporteStockService {
 
     /** Unidades por encima del mínimo que aún se consideran "casi crítico". */
@@ -42,18 +64,21 @@ public class ReporteStockService {
             }
 
             sinStock.sort(Comparator.comparing(FilaReporteStock::nombre));
-            // Críticos: de menor a mayor stock comercial (el más urgente primero).
-            criticos.sort(Comparator.comparingInt(FilaReporteStock::stockComercial)
-                    .thenComparing(FilaReporteStock::nombre));
-            // Disponibles: misma regla que críticos, de menor a mayor stock comercial,
-            // así los "próximo a agotar" quedan naturalmente arriba sin tabla aparte.
-            disponibles.sort(Comparator.comparingInt(FilaReporteStock::stockComercial)
-                    .thenComparing(FilaReporteStock::nombre));
+            // Críticos: de menor a mayor MARGEN (stock comercial - stock mínimo), no stock crudo.
+            criticos.sort(Comparator.comparingInt(this::margen).thenComparing(FilaReporteStock::nombre));
+            // Disponibles: misma regla que críticos, así los "próximo a crítico" quedan
+            // naturalmente arriba (menor margen) sin necesitar tabla aparte.
+            disponibles.sort(Comparator.comparingInt(this::margen).thenComparing(FilaReporteStock::nombre));
 
             return new ReporteStock(sinStock, criticos, disponibles);
         } catch (SQLException e) {
             throw new ServicioException("No se pudo generar el reporte de stock.", e);
         }
+    }
+
+    /** Margen sobre el mínimo: negativo o cero en críticos, positivo en disponibles. */
+    private int margen(FilaReporteStock f) {
+        return f.stockComercial() - f.stockMinimo();
     }
 
     /** Determina el estado de stock de un producto según su mínimo configurado. */

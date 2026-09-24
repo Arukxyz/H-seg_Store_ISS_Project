@@ -146,7 +146,7 @@ public class ReporteStockJFrame extends JFrame {
         panel.setBackground(COLOR_FONDO_VENTANA);
         panel.add(tarjetaResumen("Sin stock", valorSinStock, COLOR_BURDEO));
         panel.add(tarjetaResumen("Críticos", valorCriticos, COLOR_CRITICO_TEXTO));
-        panel.add(tarjetaResumen("Próximos a agotar", valorProximos, COLOR_AMBAR));
+        panel.add(tarjetaResumen("Próximos a crítico", valorProximos, COLOR_AMBAR));
         panel.add(tarjetaResumen("Disponibles", valorDisponibles, COLOR_DISPONIBLE_TEXTO));
         return panel;
     }
@@ -237,7 +237,7 @@ public class ReporteStockJFrame extends JFrame {
         titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         encabezado.add(titulo);
 
-        JLabel subtitulo = new JLabel("Ordenados de menor a mayor stock comercial (el más urgente primero).");
+        JLabel subtitulo = new JLabel("Ordenados de menor a mayor margen sobre el stock mínimo (el más urgente primero).");
         subtitulo.setFont(new Font("SansSerif", Font.PLAIN, 11));
         subtitulo.setForeground(COLOR_GRIS_TEXTO);
         subtitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -269,7 +269,7 @@ public class ReporteStockJFrame extends JFrame {
         titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         encabezado.add(titulo);
 
-        JLabel subtitulo = new JLabel("Ordenados de menor a mayor stock comercial.");
+        JLabel subtitulo = new JLabel("Ordenados de menor a mayor margen sobre el stock mínimo.");
         subtitulo.setFont(new Font("SansSerif", Font.PLAIN, 11));
         subtitulo.setForeground(COLOR_GRIS_TEXTO);
         subtitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -501,7 +501,11 @@ public class ReporteStockJFrame extends JFrame {
     }
 
     /**
-     * Resalta cada fila según el estado de la tabla
+     * Resalta cada fila según el estado de la tabla:
+     * - Si {@code estadoFijo} viene informado (SIN_STOCK o CRITICO), todas
+     *   las filas usan ese color (toda la tabla es homogénea).
+     * - Si viene {@code modeloConsulta}, consulta el estado real de cada
+     *   fila para resaltar solo las "próximo a crítico" en ámbar.
      */
     private final class ResaltadoFilaRenderer extends DefaultTableCellRenderer {
         private final EstadoStock estadoFijo;
@@ -589,7 +593,7 @@ public class ReporteStockJFrame extends JFrame {
         }
     }
 
-    /** Ya llega ordenada de menor a mayor stock comercial (ver ReporteStockService). */
+    /** Ya llega ordenada de menor a mayor margen (stock comercial - stock mínimo). */
     private static final class ModeloCriticos extends AbstractTableModel {
         private final String[] columnas =
                 {"Código", "Nombre", "Categoría", "Talla", "Precio (S/)", "Stock comercial", "Stock mínimo"};
@@ -635,7 +639,7 @@ public class ReporteStockJFrame extends JFrame {
         }
     }
 
-    /** Ya llega ordenada de menor a mayor stock comercial (ver ReporteStockService). */
+    /** Ya llega ordenada de menor a mayor margen (stock comercial - stock mínimo). */
     private static final class ModeloDisponibles extends AbstractTableModel {
         private final String[] columnas =
                 {"Código", "Nombre", "Categoría", "Talla", "Precio (S/)", "Stock comercial", "Stock mínimo", "Estado"};
