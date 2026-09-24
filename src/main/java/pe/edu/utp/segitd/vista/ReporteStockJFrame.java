@@ -501,11 +501,7 @@ public class ReporteStockJFrame extends JFrame {
     }
 
     /**
-     * Resalta cada fila según el estado de la tabla:
-     * - Si {@code estadoFijo} viene informado (SIN_STOCK o CRITICO), todas
-     *   las filas usan ese color (toda la tabla es homogénea).
-     * - Si viene {@code modeloConsulta}, consulta el estado real de cada
-     *   fila para resaltar solo las "próximo a agotar" en ámbar.
+     * Resalta cada fila según el estado de la tabla
      */
     private final class ResaltadoFilaRenderer extends DefaultTableCellRenderer {
         private final EstadoStock estadoFijo;
