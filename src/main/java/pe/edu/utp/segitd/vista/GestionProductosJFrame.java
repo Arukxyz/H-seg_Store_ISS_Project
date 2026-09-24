@@ -23,11 +23,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Catálogo de productos e inventario dual (RF-02 / RF-03, sección 8
- * pantalla 3). ENCARGADO puede consultar; solo ADMINISTRADOR puede
- * crear, editar, dar de baja o ajustar stock.
- */
 public class GestionProductosJFrame extends JFrame {
 
     private final GestionProductosControlador controlador = new GestionProductosControlador();

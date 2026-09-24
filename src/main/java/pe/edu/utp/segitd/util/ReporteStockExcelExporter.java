@@ -17,15 +17,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Genera el reporte de stock (RF-03) en su propio archivo .xlsx,
- * independiente del Excel de trazabilidad/inventario ({@link ExcelExporter},
- * RF-07). Tres hojas: "Sin stock", "Críticos" y "Disponibles" (incluye
- * próximos a crítico, resaltados en ámbar).
- */
+
 public final class ReporteStockExcelExporter {
 
-    /** dd-MM-yyyy_HH-mm en vez de dígitos pegados, para que el nombre se lea bien. */
     private static final DateTimeFormatter FORMATO_ARCHIVO = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm");
 
     public File exportar(List<FilaReporteStock> sinStock, List<FilaReporteStock> criticos,
