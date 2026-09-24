@@ -99,10 +99,20 @@ public class GestionProductosJFrame extends JFrame {
         panelTop.setLayout(new BoxLayout(panelTop, BoxLayout.Y_AXIS));
         panelTop.setBackground(COLOR_FONDO_VENTANA);
 
+        JPanel filaTitulo = new JPanel(new BorderLayout());
+        filaTitulo.setBackground(COLOR_FONDO_VENTANA);
+
         JLabel lblTituloVentana = new JLabel("Catálogo y Gestión de Productos");
         lblTituloVentana.setFont(new Font("SansSerif", Font.BOLD, 18));
         lblTituloVentana.setForeground(COLOR_TEXTO_MAIN);
-        panelTop.add(lblTituloVentana);
+        filaTitulo.add(lblTituloVentana, BorderLayout.WEST);
+
+        JButton botonReporteStock = new JButton("Reporte de stock");
+        estilizarBotonSecundario(botonReporteStock, COLOR_BURDEO);
+        botonReporteStock.addActionListener(e -> new ReporteStockJFrame().setVisible(true));
+        filaTitulo.add(botonReporteStock, BorderLayout.EAST);
+
+        panelTop.add(filaTitulo);
         panelTop.add(Box.createVerticalStrut(10));
         panelTop.add(new FranjaDecorativaHoseg());
 

@@ -534,7 +534,7 @@ El código debe permitir ejecutar esta secuencia de principio a fin:
 ## 13. Convenciones
 
 - **JDK 25 (LTS)**, codificación UTF-8. Verificar con `java -version` que el JDK instalado sea 25 antes de compilar; NetBeans debe tener la plataforma Java 25 seleccionada en las propiedades del proyecto.
-- Características de Java 21 que conviene aprovechar (sin forzarlas):
+- Características modernas de Java que conviene aprovechar (sin forzarlas):
   - `record` para los DTO de reportes y para los resultados de consultas agregadas (los modelos de entidad siguen siendo clases normales, porque necesitan setters para los DAO).
   - `switch` con patrones y expresiones de switch para las transiciones de estado de lotes, donaciones y ventas.
   - Bloques de texto (`"""`) para las sentencias SQL largas en los DAO: mucho más legibles que la concatenación con `+`.

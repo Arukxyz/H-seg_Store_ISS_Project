@@ -159,10 +159,47 @@ public class MenuPrincipalJFrame extends JFrame {
                 new LineBorder(new Color(0xE5, 0xE5, 0xE3), 1),
                 BorderFactory.createEmptyBorder(12, 16, 12, 16)));
 
+                JPanel filaTituloGrafico = new JPanel();
+        filaTituloGrafico.setLayout(new BoxLayout(filaTituloGrafico, BoxLayout.Y_AXIS));
+        filaTituloGrafico.setBackground(Color.WHITE);
+
         JLabel tituloGrafico = new JLabel("Estado de Almacén y Logística", SwingConstants.LEFT);
         tituloGrafico.setFont(new Font("SansSerif", Font.BOLD, 13));
         tituloGrafico.setForeground(COLOR_TEXTO_MAIN);
-        panelGraficoDerecha.add(tituloGrafico, BorderLayout.NORTH);
+        tituloGrafico.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filaTituloGrafico.add(tituloGrafico);
+        filaTituloGrafico.add(Box.createVerticalStrut(6));
+
+        JPanel filaBotonDetalle = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        filaBotonDetalle.setBackground(Color.WHITE);
+        filaBotonDetalle.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JButton botonVerReporteStock = new JButton("Reporte de stock");
+        botonVerReporteStock.setFont(new Font("SansSerif", Font.BOLD, 11));
+        botonVerReporteStock.setForeground(COLOR_PRIMARIO);
+        botonVerReporteStock.setBackground(Color.WHITE);
+        botonVerReporteStock.setFocusPainted(false);
+        botonVerReporteStock.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonVerReporteStock.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_PRIMARIO, 1),
+                BorderFactory.createEmptyBorder(3, 10, 3, 10)));
+        botonVerReporteStock.addActionListener(e -> new ReporteStockJFrame().setVisible(true));
+        botonVerReporteStock.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonVerReporteStock.setBackground(COLOR_PRIMARIO);
+                botonVerReporteStock.setForeground(Color.WHITE);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonVerReporteStock.setBackground(Color.WHITE);
+                botonVerReporteStock.setForeground(COLOR_PRIMARIO);
+            }
+        });
+        filaBotonDetalle.add(botonVerReporteStock);
+        filaTituloGrafico.add(filaBotonDetalle);
+
+        panelGraficoDerecha.add(filaTituloGrafico, BorderLayout.NORTH);
 
         JPanel cuerpoGrafico = new JPanel(new GridLayout(2, 1, 0, 10));
         cuerpoGrafico.setBackground(Color.WHITE);
@@ -200,7 +237,7 @@ public class MenuPrincipalJFrame extends JFrame {
         cuerpoGrafico.add(fila2);
         
         panelGraficoDerecha.add(cuerpoGrafico, BorderLayout.CENTER);
-        panelGraficoDerecha.setPreferredSize(new Dimension(320, 100));
+           panelGraficoDerecha.setPreferredSize(new Dimension(320, 128));
         
         contenedorControles.add(panelGraficoDerecha, BorderLayout.EAST);
         return contenedorControles;
