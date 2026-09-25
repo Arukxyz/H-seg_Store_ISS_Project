@@ -8,7 +8,7 @@ import pe.edu.utp.segitd.modelo.TipoStock;
 import pe.edu.utp.segitd.servicio.ServicioException;
 import pe.edu.utp.segitd.util.SesionUsuario;
 import pe.edu.utp.segitd.util.Validador;
-
+import pe.edu.utp.segitd.servicio.StockMinimoSugerido;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -52,6 +52,9 @@ public class GestionProductosJFrame extends JFrame {
     private final JButton botonGuardar = new JButton("Guardar");
     private final JButton botonEliminar = new JButton("Dar de baja");
     private final JButton botonAjustarStock = new JButton("Ajustar stock");
+
+    private final JLabel lblStockMinimoSugerido = new JLabel(" ");
+    private final JButton botonInfoFormula = new JButton("ⓘ");
 
     private String codigoEnEdicion;
 
@@ -221,6 +224,11 @@ public class GestionProductosJFrame extends JFrame {
         agregarCampo(panel, gbc, fila++, "Stock comercial inicial:", spinnerStockComercial);
         agregarCampo(panel, gbc, fila++, "Stock mínimo:", spinnerStockMinimo);
 
+        gbc.gridy = fila++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panel.add(construirFilaSugerencia(), gbc);
+
         checkAplicaTripleImpacto.setFont(FUENTE_LABEL);
         checkAplicaTripleImpacto.setBackground(Color.WHITE);
         checkAplicaTripleImpacto.setForeground(COLOR_TEXTO_MAIN);
@@ -274,6 +282,49 @@ public class GestionProductosJFrame extends JFrame {
         }
         panel.add(campo, gbc);
     }
+
+    private JPanel construirFilaSugerencia() {
+    JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+    fila.setBackground(Color.WHITE);
+
+    lblStockMinimoSugerido.setFont(new Font("SansSerif", Font.ITALIC, 11));
+    lblStockMinimoSugerido.setForeground(COLOR_GRIS_TEXTO);
+    fila.add(lblStockMinimoSugerido);
+
+    botonInfoFormula.setFont(new Font("SansSerif", Font.BOLD, 11));
+    botonInfoFormula.setMargin(new Insets(0, 4, 0, 4));
+    botonInfoFormula.setFocusPainted(false);
+    botonInfoFormula.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    botonInfoFormula.addActionListener(e -> mostrarFormulaSugerido());
+    fila.add(botonInfoFormula);
+
+    return fila;
+}
+
+private void mostrarFormulaSugerido() {
+    JOptionPane.showMessageDialog(this,
+            "Stock mínimo sugerido = consumo promedio diario × días de reposición × margen de seguridad\n\n"
+                    + "• Consumo promedio diario: salidas comerciales (ventas) de los últimos 30 días ÷ 30\n"
+                    + "• Días de reposición estimados: 7\n"
+                    + "• Margen de seguridad: 1.3\n\n"
+                    + "Si el producto no tiene ventas registradas en ese periodo (o es nuevo), se muestra un "
+                    + "valor de referencia fijo en vez del cálculo. El administrador siempre puede fijar un "
+                    + "mínimo distinto — por ejemplo, en temporadas de campaña conviene uno más alto del que "
+                    + "sugiere el histórico.",
+            "¿Cómo se calcula el stock mínimo sugerido?",
+            JOptionPane.INFORMATION_MESSAGE);
+}
+
+private void actualizarSugerenciaStockMinimo(String codigoProducto) {
+    try {
+        StockMinimoSugerido sugerencia = controlador.calcularStockMinimoSugerido(codigoProducto);
+        lblStockMinimoSugerido.setText(sugerencia.conHistorial()
+                ? "Sugerido: " + sugerencia.valorSugerido() + " (según ventas de los últimos 30 días)"
+                : "Sugerido: " + sugerencia.valorSugerido() + " (sin historial de ventas — valor de referencia)");
+    } catch (ServicioException e) {
+        lblStockMinimoSugerido.setText(" ");
+    }
+}
 
     private JPanel construirBotones() {
         JPanel panel = new JPanel(new GridLayout(1, 4, 10, 0));
@@ -395,10 +446,13 @@ public class GestionProductosJFrame extends JFrame {
         spinnerStockComercial.setValue(p.getStockComercial());
         spinnerStockComercial.setEnabled(false);
         spinnerStockMinimo.setValue(p.getStockMinimo());
+        actualizarSugerenciaStockMinimo(p.getCodigo());
         checkAplicaTripleImpacto.setSelected(p.isAplicaTripleImpacto());
         comboTipoCompromiso.setSelectedItem(p.getTipoCompromiso());
         checkVisibleWeb.setSelected(p.isVisibleWeb());
     }
+
+
 
     private void limpiarFormulario() {
         codigoEnEdicion = null;
@@ -415,6 +469,7 @@ public class GestionProductosJFrame extends JFrame {
         spinnerStockComercial.setValue(0);
         spinnerStockComercial.setEnabled(esAdministrador);
         spinnerStockMinimo.setValue(5);
+        lblStockMinimoSugerido.setText("Sugerido: no aplica para un producto nuevo (aún sin historial de ventas)"); 
         checkAplicaTripleImpacto.setSelected(true);
         comboTipoCompromiso.setSelectedItem(null);
         checkVisibleWeb.setSelected(true);

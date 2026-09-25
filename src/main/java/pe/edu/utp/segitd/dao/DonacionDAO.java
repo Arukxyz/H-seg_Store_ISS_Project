@@ -4,6 +4,7 @@ import pe.edu.utp.segitd.modelo.Donacion;
 import pe.edu.utp.segitd.modelo.EstadoDonacion;
 import pe.edu.utp.segitd.modelo.FilaTrazabilidad;
 import pe.edu.utp.segitd.modelo.TipoCompromiso;
+import pe.edu.utp.segitd.modelo.FilaDonacionRiesgo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -263,4 +264,44 @@ public final class DonacionDAO {
         donacion.setCreadoEn(rs.getObject("creado_en", OffsetDateTime.class));
         return donacion;
     }
+
+
+    /**
+ * Donaciones PENDIENTE o ASIGNADA que llevan {@code diasUmbral} días o más
+ * sin avanzar de estado (sección "donaciones en riesgo", valor agregado).
+ * El reloj de una PENDIENTE corre desde que se creó; el de una ASIGNADA
+ * corre desde que se armó su lote, no desde que nació la donación.
+ */
+public List<FilaDonacionRiesgo> listarEnRiesgo(int diasUmbral, Connection conexion) throws SQLException {
+    String sql = """
+            SELECT d.id, p.nombre AS producto_nombre, d.cantidad, d.tipo, d.estado,
+                   EXTRACT(DAY FROM (now() - COALESCE(l.fecha_creacion, d.creado_en)))::int AS dias_en_riesgo,
+                   l.codigo_lote, c.nombre AS comunidad_nombre
+              FROM donacion d
+              JOIN producto p ON p.codigo = d.codigo_producto
+              LEFT JOIN lote_donacion l ON l.id = d.id_lote
+              LEFT JOIN comunidad c ON c.id = l.id_comunidad
+             WHERE d.estado IN ('PENDIENTE', 'ASIGNADA')
+               AND (now() - COALESCE(l.fecha_creacion, d.creado_en)) >= make_interval(days => ?)
+             ORDER BY dias_en_riesgo DESC
+            """;
+    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+        ps.setInt(1, diasUmbral);
+        try (ResultSet rs = ps.executeQuery()) {
+            List<FilaDonacionRiesgo> resultado = new ArrayList<>();
+            while (rs.next()) {
+                resultado.add(new FilaDonacionRiesgo(
+                        rs.getInt("id"),
+                        rs.getString("producto_nombre"),
+                        rs.getInt("cantidad"),
+                        TipoCompromiso.valueOf(rs.getString("tipo")),
+                        EstadoDonacion.valueOf(rs.getString("estado")),
+                        rs.getInt("dias_en_riesgo"),
+                        rs.getString("codigo_lote"),
+                        rs.getString("comunidad_nombre")));
+            }
+            return resultado;
+        }
+    }
+}
 }

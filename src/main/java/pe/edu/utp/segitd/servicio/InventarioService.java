@@ -28,6 +28,12 @@ public class InventarioService {
     private final ProductoDAO productoDAO = new ProductoDAO();
     private final MovimientoDAO movimientoDAO = new MovimientoDAO();
 
+    private static final int DIAS_VENTANA_CONSUMO = 30;
+    private static final int DIAS_REPOSICION_ESTIMADOS = 7;
+    private static final double FACTOR_SEGURIDAD = 1.3;
+    private static final int STOCK_MINIMO_POR_DEFECTO = 5;
+
+
     public List<Producto> listarProductos() {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             return productoDAO.listarActivos(conexion);
@@ -152,4 +158,28 @@ public class InventarioService {
             }
         };
     }
+
+
+    /**
+ * Stock mínimo sugerido a partir del consumo histórico real (valor agregado
+ * sobre RF-02): consumo_promedio_diario × días_de_reposición × margen de
+ * seguridad, sobre los últimos DIAS_VENTANA_CONSUMO días de salidas
+ * comerciales. No sustituye el criterio del administrador — solo lo
+ * informa; por ejemplo, en campañas puede convenir un mínimo más alto del
+ * que sugiere el histórico. Si el producto no tiene ventas registradas en
+ * la ventana (nuevo o sin movimiento), se devuelve un valor de referencia
+ * fijo con conHistorial=false.
+ */
+public StockMinimoSugerido calcularStockMinimoSugerido(String codigoProducto) {
+    try (Connection conexion = ConexionBD.obtenerConexion()) {
+        double consumoPromedio = movimientoDAO.consumoPromedioDiario(codigoProducto, DIAS_VENTANA_CONSUMO, conexion);
+        if (consumoPromedio <= 0) {
+            return new StockMinimoSugerido(STOCK_MINIMO_POR_DEFECTO, 0, false);
+        }
+        int sugerido = (int) Math.ceil(consumoPromedio * DIAS_REPOSICION_ESTIMADOS * FACTOR_SEGURIDAD);
+        return new StockMinimoSugerido(sugerido, consumoPromedio, true);
+    } catch (SQLException e) {
+        throw new ServicioException("No se pudo calcular el stock mínimo sugerido.", e);
+    }
+}
 }

@@ -16,6 +16,7 @@ import pe.edu.utp.segitd.modelo.Ong;
 import pe.edu.utp.segitd.modelo.OrigenSistema;
 import pe.edu.utp.segitd.modelo.TipoMovimiento;
 import pe.edu.utp.segitd.modelo.TipoStock;
+import pe.edu.utp.segitd.modelo.FilaDonacionRiesgo;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -173,4 +174,16 @@ public class DespachoService {
         movimiento.setIdUsuario(idUsuario);
         movimientoDAO.registrar(movimiento, conexion);
     }
+
+
+    private static final int DIAS_UMBRAL_RIESGO_DONACION = 15;
+
+/** Donaciones atrasadas: PENDIENTE sin asignar, o ASIGNADA a un lote que no despacha, hace 15+ días. */
+public List<FilaDonacionRiesgo> listarDonacionesEnRiesgo() {
+    try (Connection conexion = ConexionBD.obtenerConexion()) {
+        return donacionDAO.listarEnRiesgo(DIAS_UMBRAL_RIESGO_DONACION, conexion);
+    } catch (SQLException e) {
+        throw new ServicioException("No se pudieron cargar las donaciones en riesgo.", e);
+    }
+}
 }

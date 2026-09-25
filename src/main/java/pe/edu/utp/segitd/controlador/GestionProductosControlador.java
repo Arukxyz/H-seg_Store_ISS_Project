@@ -4,6 +4,7 @@ import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.modelo.TipoStock;
 import pe.edu.utp.segitd.servicio.InventarioService;
 import pe.edu.utp.segitd.util.SesionUsuario;
+import pe.edu.utp.segitd.servicio.StockMinimoSugerido;
 
 import java.util.List;
 
@@ -32,4 +33,8 @@ public class GestionProductosControlador {
         int idUsuario = SesionUsuario.obtenerInstancia().getUsuarioActual().getId();
         inventarioService.ajustarStock(codigoProducto, tipoStock, delta, motivo, idUsuario);
     }
+
+    public StockMinimoSugerido calcularStockMinimoSugerido(String codigoProducto) {
+    return inventarioService.calcularStockMinimoSugerido(codigoProducto);
+}
 }

@@ -74,4 +74,31 @@ public final class MovimientoDAO {
         movimiento.setFecha(rs.getObject("fecha", OffsetDateTime.class));
         return movimiento;
     }
+
+    /**
+ * Consumo promedio diario de un producto en los últimos {@code dias} días,
+ * a partir de sus salidas de stock COMERCIAL (ventas confirmadas). Alimenta
+ * el cálculo del stock mínimo sugerido (InventarioService). Devuelve 0 si
+ * el producto no tuvo salidas en la ventana (sin historial suficiente).
+ */
+public double consumoPromedioDiario(String codigoProducto, int dias, Connection conexion) throws SQLException {
+    String sql = """
+            SELECT COALESCE(SUM(-cantidad), 0) AS total_salidas
+              FROM movimiento_inventario
+             WHERE codigo_producto = ?
+               AND tipo_stock = 'COMERCIAL'
+               AND tipo_movimiento = 'SALIDA'
+               AND fecha >= now() - make_interval(days => ?)
+            """;
+    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+        ps.setString(1, codigoProducto);
+        ps.setInt(2, dias);
+        try (ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            int totalSalidas = rs.getInt("total_salidas");
+            return totalSalidas <= 0 ? 0.0 : totalSalidas / (double) dias;
+        }
+    }
+}
+
 }

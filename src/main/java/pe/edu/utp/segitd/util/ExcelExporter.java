@@ -14,6 +14,7 @@ import pe.edu.utp.segitd.modelo.FilaHistorialDespacho;
 import pe.edu.utp.segitd.modelo.FilaTrazabilidad;
 import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.servicio.ResumenImpacto;
+import pe.edu.utp.segitd.modelo.FilaDonacionRiesgo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -219,4 +220,33 @@ public final class ExcelExporter {
     private String nvl(String valor) {
         return valor == null ? "" : valor;
     }
+
+    /** Exporta la tabla de donaciones en riesgo (valor agregado, sección 8 pantalla 5). */
+public File exportarDonacionesRiesgo(List<FilaDonacionRiesgo> filas) throws IOException {
+    try (XSSFWorkbook libro = new XSSFWorkbook()) {
+        CellStyle estiloEncabezado = crearEstiloEncabezado(libro);
+        Sheet hoja = libro.createSheet("Donaciones en riesgo");
+        escribirEncabezado(hoja, estiloEncabezado,
+                "Producto", "Cantidad", "Tipo", "Estado", "Días en riesgo", "Lote", "Comunidad");
+
+        int indiceFila = 1;
+        for (FilaDonacionRiesgo f : filas) {
+            Row fila = hoja.createRow(indiceFila++);
+            fila.createCell(0).setCellValue(f.nombreProducto());
+            fila.createCell(1).setCellValue(f.cantidad());
+            fila.createCell(2).setCellValue(f.tipo().name());
+            fila.createCell(3).setCellValue(f.estado().name());
+            fila.createCell(4).setCellValue(f.diasEnRiesgo());
+            fila.createCell(5).setCellValue(f.codigoLote() == null ? "" : f.codigoLote());
+            fila.createCell(6).setCellValue(f.comunidadNombre() == null ? "" : f.comunidadNombre());
+        }
+        autoajustarColumnas(hoja, 7);
+
+        File archivo = new File("reporte_donaciones_riesgo_" + FORMATO_ARCHIVO.format(LocalDateTime.now()) + ".xlsx");
+        try (FileOutputStream salida = new FileOutputStream(archivo)) {
+            libro.write(salida);
+        }
+        return archivo;
+    }
+}
 }

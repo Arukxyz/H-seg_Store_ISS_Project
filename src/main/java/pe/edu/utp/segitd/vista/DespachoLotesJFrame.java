@@ -1,5 +1,4 @@
 package pe.edu.utp.segitd.vista;
-
 import pe.edu.utp.segitd.controlador.DespachoControlador;
 import pe.edu.utp.segitd.modelo.Comunidad;
 import pe.edu.utp.segitd.modelo.Donacion;
@@ -7,7 +6,7 @@ import pe.edu.utp.segitd.modelo.EstadoLote;
 import pe.edu.utp.segitd.modelo.LoteDonacion;
 import pe.edu.utp.segitd.modelo.Ong;
 import pe.edu.utp.segitd.servicio.ServicioException;
-
+import pe.edu.utp.segitd.modelo.FilaDonacionRiesgo;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,7 +22,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -38,7 +39,6 @@ import java.awt.LinearGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -67,6 +67,8 @@ public class DespachoLotesJFrame extends JFrame {
     private final JButton botonEnRuta = new JButton("Marcar en ruta");
     private final JButton botonEntregado = new JButton("Marcar entregado");
 
+    private final ModeloDonacionesRiesgo modeloDonacionesRiesgo = new ModeloDonacionesRiesgo();
+    private final JTable tablaDonacionesRiesgo = new JTable(modeloDonacionesRiesgo);
     
     //colores
     private final Color COLOR_FONDO_VENTANA = new Color(0xF5, 0xF5, 0xF3); // Crema suave
@@ -96,6 +98,7 @@ public class DespachoLotesJFrame extends JFrame {
         cargarSelectores();
         cargarDonacionesPendientes();
         cargarLotes();
+        cargarDonacionesRiesgo();
     }
 
     private JPanel construirContenido() {
@@ -110,9 +113,74 @@ public class DespachoLotesJFrame extends JFrame {
 
         pestanas.addTab("Nuevo lote", construirTabNuevoLote());
         pestanas.addTab("Lotes", construirTabLotes());
+        pestanas.addTab("En riesgo", construirTabRiesgo());
         raiz.add(pestanas, BorderLayout.CENTER);
         return raiz;
     }
+
+    private JPanel construirTabRiesgo() {
+    JPanel panel = new JPanel(new BorderLayout(12, 12));
+    panel.setBorder(BorderFactory.createEmptyBorder(16, 12, 12, 12));
+    panel.setBackground(Color.WHITE);
+
+    JLabel lblAviso = new JLabel(
+        "Donaciones que llevan 15+ días sin avanzar de estado — compromisos de triple impacto atrasados.");
+    lblAviso.setFont(FUENTE_LABEL);
+    lblAviso.setForeground(COLOR_BURDEO);
+    panel.add(lblAviso, BorderLayout.NORTH);
+
+    estilizarTablaElegante(tablaDonacionesRiesgo);
+    tablaDonacionesRiesgo.setDefaultRenderer(Object.class, new ResaltadoRiesgoRenderer());
+    JScrollPane scroll = new JScrollPane(tablaDonacionesRiesgo);
+    scroll.setBorder(BorderFactory.createLineBorder(new Color(0xEE, 0xEE, 0xEE), 1));
+    panel.add(scroll, BorderLayout.CENTER);
+
+    JButton botonExportar = new JButton("Exportar a Excel");
+    estilizarBotonPrincipal(botonExportar, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
+    botonExportar.addActionListener(e -> exportarDonacionesRiesgo());
+    JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 8));
+    panelBoton.setBackground(Color.WHITE);
+    panelBoton.add(botonExportar);
+    panel.add(panelBoton, BorderLayout.SOUTH);
+
+    return panel;
+
+}
+
+
+private void cargarDonacionesRiesgo() {
+    try {
+        modeloDonacionesRiesgo.actualizar(controlador.listarDonacionesEnRiesgo());
+    } catch (ServicioException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+private void exportarDonacionesRiesgo() {
+    try {
+        File archivo = controlador.exportarDonacionesEnRiesgo();
+        abrirArchivo(archivo);
+    } catch (ServicioException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "No se pudo generar el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+private void abrirArchivo(File archivo) {
+    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+        try {
+            Desktop.getDesktop().open(archivo);
+            return;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "El reporte se generó en " + archivo.getAbsolutePath() + " pero no se pudo abrir automáticamente.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+    }
+    JOptionPane.showMessageDialog(this, "Reporte generado en " + archivo.getAbsolutePath(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+}
 
     private JPanel construirTabNuevoLote() {
         JPanel panel = new JPanel(new BorderLayout(12, 12));
@@ -134,12 +202,10 @@ public class DespachoLotesJFrame extends JFrame {
         panelSelectores.add(comboComunidad);
         panelSelectores.add(lblOng);
         panelSelectores.add(comboOng);
-
         JButton botonCrear = new JButton("Crear lote con las seleccionadas");
         estilizarBotonPrincipal(botonCrear, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
         botonCrear.addActionListener(e -> crearLote());
         panelSelectores.add(botonCrear);
-        
         panel.add(panelSelectores, BorderLayout.NORTH);
         
         estilizarTablaElegante(tablaDonacionesPendientes);
@@ -492,6 +558,51 @@ public class DespachoLotesJFrame extends JFrame {
         }
     }
 
+
+private static final class ModeloDonacionesRiesgo extends AbstractTableModel {
+    private final String[] columnas = {"Producto", "Cantidad", "Tipo", "Estado", "Días en riesgo", "Lote", "Comunidad"};
+    private List<FilaDonacionRiesgo> filas = List.of();
+
+    void actualizar(List<FilaDonacionRiesgo> nuevas) {
+        this.filas = nuevas;
+        fireTableDataChanged();
+    }
+
+    @Override public int getRowCount() { return filas.size(); }
+    @Override public int getColumnCount() { return columnas.length; }
+    @Override public String getColumnName(int columna) { return columnas[columna]; }
+
+    @Override
+    public Object getValueAt(int fila, int columna) {
+        FilaDonacionRiesgo f = filas.get(fila);
+        return switch (columna) {
+            case 0 -> f.nombreProducto();
+            case 1 -> f.cantidad();
+            case 2 -> f.tipo();
+            case 3 -> f.estado();
+            case 4 -> f.diasEnRiesgo();
+            case 5 -> f.codigoLote() == null ? "—" : f.codigoLote();
+            case 6 -> f.comunidadNombre() == null ? "—" : f.comunidadNombre();
+            default -> null;
+        };
+    }
+}
+
+private final class ResaltadoRiesgoRenderer extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                     boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        int dias = modeloDonacionesRiesgo.filas.get(table.convertRowIndexToModel(row)).diasEnRiesgo();
+        if (!isSelected) {
+            c.setBackground(dias >= 30 ? new Color(0xFF, 0xEB, 0xEE) : Color.WHITE);
+        }
+        setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        return c;
+    }
+}
+
+
     //metodos extras
         private void estilizarTablaElegante(JTable t) {
         t.setRowHeight(26);
@@ -551,4 +662,4 @@ public class DespachoLotesJFrame extends JFrame {
         });
     }
 
-}
+}   
