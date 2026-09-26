@@ -121,6 +121,14 @@ public class ReportesImpactoJFrame extends JFrame {
 
         panelInferior.add(Box.createVerticalStrut(12));
 
+        panelInferior.add(Box.createVerticalStrut(10));
+
+        JButton botonDashboard = new JButton("Ver Dashboard de Ventas y Demanda");
+        estilizarBotonPrincipal(botonDashboard, COLOR_PRIMARIO, COLOR_PRIMARIO_HOVER);
+        botonDashboard.setAlignmentX(Component.LEFT_ALIGNMENT);
+        botonDashboard.addActionListener(e -> new DashboardVentasJFrame().setVisible(true));
+        panelInferior.add(botonDashboard);
+
         etiquetaEstado.setFont(new Font("SansSerif", Font.PLAIN, 13));
         etiquetaEstado.setForeground(COLOR_EXITO);
         etiquetaEstado.setAlignmentX(Component.LEFT_ALIGNMENT);

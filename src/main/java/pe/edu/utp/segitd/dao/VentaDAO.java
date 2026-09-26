@@ -5,6 +5,7 @@ import pe.edu.utp.segitd.modelo.EstadoVenta;
 import pe.edu.utp.segitd.modelo.OrigenVenta;
 import pe.edu.utp.segitd.modelo.ResumenVentas;
 import pe.edu.utp.segitd.modelo.Venta;
+import pe.edu.utp.segitd.modelo.FilaRankingProducto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -183,4 +184,31 @@ public final class VentaDAO {
         detalle.setSubtotal(rs.getBigDecimal("subtotal"));
         return detalle;
     }
+
+    /** Ranking de productos por unidades vendidas en el periodo (ventas PAGADO). Base del top/bottom del dashboard. */
+public List<FilaRankingProducto> rankingProductosVendidos(OffsetDateTime desde, OffsetDateTime hasta, Connection conexion) throws SQLException {
+    String sql = """
+            SELECT p.codigo, p.nombre, SUM(dv.cantidad) AS unidades, SUM(dv.subtotal) AS ingreso
+              FROM detalle_venta dv
+              JOIN venta v ON v.id = dv.id_venta
+              JOIN producto p ON p.codigo = dv.codigo_producto
+             WHERE v.estado = 'PAGADO' AND v.origen = 'WEB'
+               AND v.fecha >= ? AND v.fecha <= ?
+             GROUP BY p.codigo, p.nombre
+             ORDER BY unidades DESC
+            """;
+    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+        ps.setObject(1, desde);
+        ps.setObject(2, hasta);
+        try (ResultSet rs = ps.executeQuery()) {
+            List<FilaRankingProducto> resultado = new ArrayList<>();
+            while (rs.next()) {
+                resultado.add(new FilaRankingProducto(
+                        rs.getString("codigo"), rs.getString("nombre"),
+                        rs.getInt("unidades"), rs.getBigDecimal("ingreso")));
+            }
+            return resultado;
+        }
+    }
+}
 }

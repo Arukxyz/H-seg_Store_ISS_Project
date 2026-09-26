@@ -15,6 +15,9 @@ import pe.edu.utp.segitd.modelo.FilaTrazabilidad;
 import pe.edu.utp.segitd.modelo.Producto;
 import pe.edu.utp.segitd.servicio.ResumenImpacto;
 import pe.edu.utp.segitd.modelo.FilaDonacionRiesgo;
+import pe.edu.utp.segitd.modelo.FilaDemandaProducto;
+import pe.edu.utp.segitd.modelo.FilaRankingProducto;
+import pe.edu.utp.segitd.modelo.IndicadorVentasPeriodo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -249,4 +252,56 @@ public File exportarDonacionesRiesgo(List<FilaDonacionRiesgo> filas) throws IOEx
         return archivo;
     }
 }
+
+public File exportarDashboardVentas(OffsetDateTime desde, OffsetDateTime hasta, IndicadorVentasPeriodo indicadores,
+                                     List<FilaRankingProducto> ranking, List<FilaDemandaProducto> demanda) throws IOException {
+    try (XSSFWorkbook libro = new XSSFWorkbook()) {
+        CellStyle estiloEncabezado = crearEstiloEncabezado(libro);
+        CellStyle estiloSeccion = crearEstiloSeccion(libro);
+
+        Sheet hojaIndicadores = libro.createSheet("Indicadores de ventas");
+        int fila = escribirTituloSeccion(hojaIndicadores, estiloSeccion, 0,
+                "Ventas del periodo " + FORMATO_DIA.format(desde) + " al " + FORMATO_DIA.format(hasta));
+        escribirEncabezadoEnFila(hojaIndicadores, estiloEncabezado, fila++, "Indicador", "Valor");
+        fila = escribirFilaResumen(hojaIndicadores, fila, "Pedidos confirmados", indicadores.pedidosConfirmados());
+        fila = escribirFilaResumen(hojaIndicadores, fila, "Unidades vendidas", indicadores.unidadesVendidas());
+        fila = escribirFilaResumen(hojaIndicadores, fila, "Monto vendido (S/)", indicadores.montoVendido().doubleValue());
+        escribirFilaResumen(hojaIndicadores, fila, "Ticket promedio (S/)", indicadores.ticketPromedio().doubleValue());
+        autoajustarColumnas(hojaIndicadores, 2);
+
+        Sheet hojaRanking = libro.createSheet("Ranking de productos");
+        escribirEncabezado(hojaRanking, estiloEncabezado, "Código", "Producto", "Unidades vendidas", "Ingreso generado (S/)");
+        int indiceFila = 1;
+        for (FilaRankingProducto r : ranking) {
+            Row f = hojaRanking.createRow(indiceFila++);
+            f.createCell(0).setCellValue(r.codigoProducto());
+            f.createCell(1).setCellValue(r.nombreProducto());
+            f.createCell(2).setCellValue(r.unidadesVendidas());
+            f.createCell(3).setCellValue(r.ingresoGenerado().doubleValue());
+        }
+        autoajustarColumnas(hojaRanking, 4);
+
+        Sheet hojaDemanda = libro.createSheet("Análisis de demanda");
+        escribirEncabezado(hojaDemanda, estiloEncabezado,
+                "Código", "Producto", "Stock comercial", "Stock mínimo", "Consumo prom. diario", "Categoría de demanda");
+        indiceFila = 1;
+        for (FilaDemandaProducto d : demanda) {
+            Row f = hojaDemanda.createRow(indiceFila++);
+            f.createCell(0).setCellValue(d.codigoProducto());
+            f.createCell(1).setCellValue(d.nombreProducto());
+            f.createCell(2).setCellValue(d.stockComercial());
+            f.createCell(3).setCellValue(d.stockMinimoActual());
+            f.createCell(4).setCellValue(Math.round(d.consumoPromedioDiario() * 100) / 100.0);
+            f.createCell(5).setCellValue(d.categoria().name());
+        }
+        autoajustarColumnas(hojaDemanda, 6);
+
+        File archivo = new File("dashboard_ventas_demanda_" + FORMATO_ARCHIVO.format(LocalDateTime.now()) + ".xlsx");
+        try (FileOutputStream salida = new FileOutputStream(archivo)) {
+            libro.write(salida);
+        }
+        return archivo;
+    }
+}
+
 }

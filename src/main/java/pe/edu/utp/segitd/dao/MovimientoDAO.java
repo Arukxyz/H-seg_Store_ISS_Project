@@ -4,6 +4,7 @@ import pe.edu.utp.segitd.modelo.MovimientoInventario;
 import pe.edu.utp.segitd.modelo.OrigenSistema;
 import pe.edu.utp.segitd.modelo.TipoMovimiento;
 import pe.edu.utp.segitd.modelo.TipoStock;
+import java.util.HashMap; import java.util.Map;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -97,6 +98,28 @@ public double consumoPromedioDiario(String codigoProducto, int dias, Connection 
             rs.next();
             int totalSalidas = rs.getInt("total_salidas");
             return totalSalidas <= 0 ? 0.0 : totalSalidas / (double) dias;
+        }
+    }
+}
+
+
+/** Consumo promedio diario de TODOS los productos con salidas en la ventana, para el análisis de demanda. */
+public Map<String, Double> mapaConsumoPromedioDiario(int dias, Connection conexion) throws SQLException {
+    String sql = """
+            SELECT codigo_producto, SUM(-cantidad) AS total_salidas
+              FROM movimiento_inventario
+             WHERE tipo_stock = 'COMERCIAL' AND tipo_movimiento = 'SALIDA'
+               AND fecha >= now() - make_interval(days => ?)
+             GROUP BY codigo_producto
+            """;
+    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+        ps.setInt(1, dias);
+        try (ResultSet rs = ps.executeQuery()) {
+            Map<String, Double> resultado = new HashMap<>();
+            while (rs.next()) {
+                resultado.put(rs.getString("codigo_producto"), rs.getInt("total_salidas") / (double) dias);
+            }
+            return resultado;
         }
     }
 }
