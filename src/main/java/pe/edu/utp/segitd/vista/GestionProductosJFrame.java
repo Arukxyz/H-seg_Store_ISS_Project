@@ -35,15 +35,17 @@ public class GestionProductosJFrame extends JFrame {
     private final JTextField txtCodigo = new JTextField(14);
     private final JTextField txtNombre = new JTextField(20);
     private final JTextField txtMarca = new JTextField(20);
-    private final JTextField txtCategoria = new JTextField(20);
-    private final JTextField txtColeccion = new JTextField(20);
+    // Solo valores de las tablas categoria y coleccion (07_normalizacion.sql)
+    private final JComboBox<String> comboCategoria = new JComboBox<>();
+    private final JComboBox<String> comboColeccion = new JComboBox<>();
     private final JTextField txtTalla = new JTextField(6);
     private final JTextField txtDescripcion = new JTextField(20);
     private final JTextField txtUrlImagen = new JTextField(20);
     private final JTextField txtPrecio = new JTextField(10);
     private final JSpinner spinnerStockComercial = new JSpinner(new SpinnerNumberModel(0, 0, 1_000_000, 1));
     private final JSpinner spinnerStockMinimo = new JSpinner(new SpinnerNumberModel(5, 0, 1_000_000, 1));
-    private final JCheckBox checkAplicaTripleImpacto = new JCheckBox("Aplica triple impacto", true);
+    // Solo informativa: la base deriva el triple impacto del tipo de compromiso
+    private final JCheckBox checkAplicaTripleImpacto = new JCheckBox("Aplica triple impacto", false);
     private final JComboBox<TipoCompromiso> comboTipoCompromiso =
             new JComboBox<>(new TipoCompromiso[]{null, TipoCompromiso.ABRIGO, TipoCompromiso.ARBOL});
     private final JCheckBox checkVisibleWeb = new JCheckBox("Visible en la web", true);
@@ -83,6 +85,7 @@ public class GestionProductosJFrame extends JFrame {
         aplicarControlAcceso();
         pack();
         setLocationRelativeTo(null);
+        cargarCatalogos();
         cargarProductos();
         limpiarFormulario();
     }
@@ -215,8 +218,8 @@ public class GestionProductosJFrame extends JFrame {
         agregarCampo(panel, gbc, fila++, "Código:", txtCodigo);
         agregarCampo(panel, gbc, fila++, "Nombre:", txtNombre);
         agregarCampo(panel, gbc, fila++, "Marca:", txtMarca);
-        agregarCampo(panel, gbc, fila++, "Categoría:", txtCategoria);
-        agregarCampo(panel, gbc, fila++, "Colección:", txtColeccion);
+        agregarCampo(panel, gbc, fila++, "Categoría:", comboCategoria);
+        agregarCampo(panel, gbc, fila++, "Colección:", comboColeccion);
         agregarCampo(panel, gbc, fila++, "Talla:", txtTalla);
         agregarCampo(panel, gbc, fila++, "Descripción:", txtDescripcion);
         agregarCampo(panel, gbc, fila++, "URL imagen:", txtUrlImagen);
@@ -232,6 +235,10 @@ public class GestionProductosJFrame extends JFrame {
         checkAplicaTripleImpacto.setFont(FUENTE_LABEL);
         checkAplicaTripleImpacto.setBackground(Color.WHITE);
         checkAplicaTripleImpacto.setForeground(COLOR_TEXTO_MAIN);
+        checkAplicaTripleImpacto.setEnabled(false);
+        checkAplicaTripleImpacto.setToolTipText("Se marca sola al elegir un tipo de compromiso (ABRIGO o ÁRBOL).");
+        comboTipoCompromiso.addActionListener(e ->
+                checkAplicaTripleImpacto.setSelected(comboTipoCompromiso.getSelectedItem() != null));
         gbc.gridy = fila++; 
         gbc.gridx = 0; 
         gbc.gridwidth = 2;
@@ -364,6 +371,23 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         }
     }
 
+    /** Llena las listas de categoría y colección; la colección admite quedar vacía. */
+    private void cargarCatalogos() {
+        try {
+            comboCategoria.removeAllItems();
+            for (String categoria : controlador.listarCategorias()) {
+                comboCategoria.addItem(categoria);
+            }
+            comboColeccion.removeAllItems();
+            comboColeccion.addItem("");
+            for (String coleccion : controlador.listarColecciones()) {
+                comboColeccion.addItem(coleccion);
+            }
+        } catch (ServicioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void cargarProductos() {
         try {
             modeloTabla.actualizar(controlador.listarProductos());
@@ -437,8 +461,8 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         txtCodigo.setEditable(false);
         txtNombre.setText(p.getNombre());
         txtMarca.setText(nvl(p.getMarca()));
-        txtCategoria.setText(p.getCategoria());
-        txtColeccion.setText(nvl(p.getColeccion()));
+        comboCategoria.setSelectedItem(p.getCategoria());
+        comboColeccion.setSelectedItem(nvl(p.getColeccion()));
         txtTalla.setText(nvl(p.getTalla()));
         txtDescripcion.setText(nvl(p.getDescripcion()));
         txtUrlImagen.setText(nvl(p.getUrlImagen()));
@@ -447,7 +471,6 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         spinnerStockComercial.setEnabled(false);
         spinnerStockMinimo.setValue(p.getStockMinimo());
         actualizarSugerenciaStockMinimo(p.getCodigo());
-        checkAplicaTripleImpacto.setSelected(p.isAplicaTripleImpacto());
         comboTipoCompromiso.setSelectedItem(p.getTipoCompromiso());
         checkVisibleWeb.setSelected(p.isVisibleWeb());
     }
@@ -460,8 +483,8 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         txtCodigo.setEditable(esAdministrador);
         txtNombre.setText("");
         txtMarca.setText("");
-        txtCategoria.setText("");
-        txtColeccion.setText("");
+        comboCategoria.setSelectedItem(null);
+        comboColeccion.setSelectedItem("");
         txtTalla.setText("");
         txtDescripcion.setText("");
         txtUrlImagen.setText("");
@@ -470,7 +493,6 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         spinnerStockComercial.setEnabled(esAdministrador);
         spinnerStockMinimo.setValue(5);
         lblStockMinimoSugerido.setText("Sugerido: no aplica para un producto nuevo (aún sin historial de ventas)"); 
-        checkAplicaTripleImpacto.setSelected(true);
         comboTipoCompromiso.setSelectedItem(null);
         checkVisibleWeb.setSelected(true);
         tabla.clearSelection();
@@ -501,16 +523,16 @@ private void actualizarSugerenciaStockMinimo(String codigoProducto) {
         producto.setCodigo(txtCodigo.getText());
         producto.setNombre(txtNombre.getText());
         producto.setMarca(Validador.vacioComoNulo(txtMarca.getText()));
-        producto.setCategoria(txtCategoria.getText());
-        producto.setColeccion(Validador.vacioComoNulo(txtColeccion.getText()));
+        producto.setCategoria((String) comboCategoria.getSelectedItem());
+        producto.setColeccion(Validador.vacioComoNulo((String) comboColeccion.getSelectedItem()));
         producto.setTalla(Validador.vacioComoNulo(txtTalla.getText()));
         producto.setDescripcion(Validador.vacioComoNulo(txtDescripcion.getText()));
         producto.setUrlImagen(Validador.vacioComoNulo(txtUrlImagen.getText()));
         producto.setPrecio(precio);
         producto.setStockComercial(((Number) spinnerStockComercial.getValue()).intValue());
         producto.setStockMinimo(((Number) spinnerStockMinimo.getValue()).intValue());
-        producto.setAplicaTripleImpacto(checkAplicaTripleImpacto.isSelected());
         producto.setTipoCompromiso((TipoCompromiso) comboTipoCompromiso.getSelectedItem());
+        producto.setAplicaTripleImpacto(producto.getTipoCompromiso() != null);
         producto.setVisibleWeb(checkVisibleWeb.isSelected());
         producto.setActivo(true);
         return producto;

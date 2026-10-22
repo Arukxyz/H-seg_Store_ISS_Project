@@ -23,9 +23,8 @@ public final class ProductoDAO {
         String sql = """
                 INSERT INTO producto
                     (codigo, nombre, marca, categoria, coleccion, talla, descripcion, url_imagen,
-                     precio, stock_comercial, stock_minimo, aplica_triple_impacto, tipo_compromiso,
-                     visible_web, activo)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     precio, stock_comercial, stock_minimo, tipo_compromiso, visible_web, activo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, producto.getCodigo());
@@ -39,10 +38,10 @@ public final class ProductoDAO {
             ps.setBigDecimal(9, producto.getPrecio());
             ps.setInt(10, producto.getStockComercial());
             ps.setInt(11, producto.getStockMinimo());
-            ps.setBoolean(12, producto.isAplicaTripleImpacto());
-            ps.setString(13, producto.getTipoCompromiso() == null ? null : producto.getTipoCompromiso().name());
-            ps.setBoolean(14, producto.isVisibleWeb());
-            ps.setBoolean(15, producto.isActivo());
+            // aplica_triple_impacto no se escribe: la base la calcula de tipo_compromiso.
+            ps.setString(12, producto.getTipoCompromiso() == null ? null : producto.getTipoCompromiso().name());
+            ps.setBoolean(13, producto.isVisibleWeb());
+            ps.setBoolean(14, producto.isActivo());
             ps.executeUpdate();
         }
         return producto;
@@ -115,7 +114,7 @@ public final class ProductoDAO {
                 UPDATE producto
                    SET nombre = ?, marca = ?, categoria = ?, coleccion = ?, talla = ?,
                        descripcion = ?, url_imagen = ?, precio = ?, stock_minimo = ?,
-                       aplica_triple_impacto = ?, tipo_compromiso = ?, visible_web = ?
+                       tipo_compromiso = ?, visible_web = ?
                  WHERE codigo = ?
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -128,11 +127,31 @@ public final class ProductoDAO {
             ps.setString(7, producto.getUrlImagen());
             ps.setBigDecimal(8, producto.getPrecio());
             ps.setInt(9, producto.getStockMinimo());
-            ps.setBoolean(10, producto.isAplicaTripleImpacto());
-            ps.setString(11, producto.getTipoCompromiso() == null ? null : producto.getTipoCompromiso().name());
-            ps.setBoolean(12, producto.isVisibleWeb());
-            ps.setString(13, producto.getCodigo());
+            ps.setString(10, producto.getTipoCompromiso() == null ? null : producto.getTipoCompromiso().name());
+            ps.setBoolean(11, producto.isVisibleWeb());
+            ps.setString(12, producto.getCodigo());
             ps.executeUpdate();
+        }
+    }
+
+    /** Categorías válidas (tabla categoria): producto.categoria solo admite estas. */
+    public List<String> listarCategorias(Connection conexion) throws SQLException {
+        return listarNombres("SELECT nombre FROM categoria ORDER BY nombre", conexion);
+    }
+
+    /** Colecciones válidas (tabla coleccion); la colección de un producto es opcional. */
+    public List<String> listarColecciones(Connection conexion) throws SQLException {
+        return listarNombres("SELECT nombre FROM coleccion ORDER BY nombre", conexion);
+    }
+
+    private List<String> listarNombres(String sql, Connection conexion) throws SQLException {
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            List<String> resultado = new ArrayList<>();
+            while (rs.next()) {
+                resultado.add(rs.getString(1));
+            }
+            return resultado;
         }
     }
 

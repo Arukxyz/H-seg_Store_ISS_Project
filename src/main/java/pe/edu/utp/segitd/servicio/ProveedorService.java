@@ -123,7 +123,8 @@ public class ProveedorService {
                 movimiento.setTipoStock(TipoStock.COMERCIAL);
                 movimiento.setTipoMovimiento(TipoMovimiento.INGRESO);
                 movimiento.setCantidad(pedido.getCantidad());
-                movimiento.setReferencia("PEDIDO_PROV:" + idPedido);
+                movimiento.setMotivo("Recepción de pedido a proveedor");
+                movimiento.setIdPedidoProveedor(idPedido);
                 movimiento.setOrigenSistema(OrigenSistema.ESCRITORIO);
                 movimiento.setIdUsuario(idUsuario);
                 movimientoDAO.registrar(movimiento, conexion);

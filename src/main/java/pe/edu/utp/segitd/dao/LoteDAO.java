@@ -88,10 +88,13 @@ public final class LoteDAO {
         }
     }
 
+    /** Sale a ruta: registra el despacho. Se entrega: registra la entrega (07_normalizacion.sql). */
     public void actualizarEstado(int idLote, EstadoLote nuevoEstado, Connection conexion) throws SQLException {
-        String sql = nuevoEstado == EstadoLote.ENTREGADO
-                ? "UPDATE lote_donacion SET estado = ?, fecha_despacho = now() WHERE id = ?"
-                : "UPDATE lote_donacion SET estado = ? WHERE id = ?";
+        String sql = switch (nuevoEstado) {
+            case EN_RUTA -> "UPDATE lote_donacion SET estado = ?, fecha_despacho = now() WHERE id = ?";
+            case ENTREGADO -> "UPDATE lote_donacion SET estado = ?, fecha_entrega = now() WHERE id = ?";
+            case PENDIENTE -> "UPDATE lote_donacion SET estado = ? WHERE id = ?";
+        };
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, nuevoEstado.name());
             ps.setInt(2, idLote);
@@ -111,14 +114,14 @@ public final class LoteDAO {
     /**
      * Historial cronológico de lotes ENTREGADOS para el reporte de impacto
      * (RF-07), con el consolidado de donaciones que llevaba cada uno. Los
-     * filtros son opcionales; las fechas se aplican sobre fecha_despacho.
+     * filtros son opcionales; las fechas se aplican sobre fecha_entrega.
      */
     public List<FilaHistorialDespacho> listarHistorialDespachos(OffsetDateTime desde, OffsetDateTime hasta,
                                                                 Integer idComunidad, Connection conexion) throws SQLException {
         StringBuilder sql = new StringBuilder("""
                 SELECT l.codigo_lote, c.nombre AS comunidad_nombre, c.distrito, c.provincia,
                        o.nombre AS ong_nombre, u.nombre AS responsable_nombre,
-                       l.fecha_creacion, l.fecha_despacho, l.estado,
+                       l.fecha_creacion, l.fecha_despacho, l.fecha_entrega, l.estado,
                        COUNT(d.id)                                              AS donaciones,
                        COALESCE(SUM(d.cantidad) FILTER (WHERE d.tipo = 'ABRIGO'), 0) AS prendas_abrigo,
                        COALESCE(SUM(d.cantidad) FILTER (WHERE d.tipo = 'ARBOL'),  0) AS arboles
@@ -130,18 +133,18 @@ public final class LoteDAO {
                  WHERE l.estado = 'ENTREGADO'
                 """);
         if (desde != null) {
-            sql.append(" AND l.fecha_despacho >= ?");
+            sql.append(" AND l.fecha_entrega >= ?");
         }
         if (hasta != null) {
-            sql.append(" AND l.fecha_despacho <= ?");
+            sql.append(" AND l.fecha_entrega <= ?");
         }
         if (idComunidad != null) {
             sql.append(" AND l.id_comunidad = ?");
         }
         sql.append("""
                  GROUP BY l.id, l.codigo_lote, c.nombre, c.distrito, c.provincia, o.nombre, u.nombre,
-                          l.fecha_creacion, l.fecha_despacho, l.estado
-                 ORDER BY l.fecha_despacho ASC
+                          l.fecha_creacion, l.fecha_despacho, l.fecha_entrega, l.estado
+                 ORDER BY l.fecha_entrega ASC
                 """);
 
         try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
@@ -167,6 +170,7 @@ public final class LoteDAO {
                             rs.getString("responsable_nombre"),
                             rs.getObject("fecha_creacion", OffsetDateTime.class),
                             rs.getObject("fecha_despacho", OffsetDateTime.class),
+                            rs.getObject("fecha_entrega", OffsetDateTime.class),
                             EstadoLote.valueOf(rs.getString("estado")),
                             rs.getInt("donaciones"),
                             rs.getInt("prendas_abrigo"),
@@ -188,6 +192,7 @@ public final class LoteDAO {
         lote.setIdUsuarioResponsable((Integer) rs.getObject("id_usuario_responsable"));
         lote.setFechaCreacion(rs.getObject("fecha_creacion", OffsetDateTime.class));
         lote.setFechaDespacho(rs.getObject("fecha_despacho", OffsetDateTime.class));
+        lote.setFechaEntrega(rs.getObject("fecha_entrega", OffsetDateTime.class));
         lote.setEstado(EstadoLote.valueOf(rs.getString("estado")));
         lote.setObservaciones(rs.getString("observaciones"));
         return lote;

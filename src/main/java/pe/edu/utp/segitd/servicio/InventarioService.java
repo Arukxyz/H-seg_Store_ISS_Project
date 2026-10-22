@@ -42,6 +42,22 @@ public class InventarioService {
         }
     }
 
+    public List<String> listarCategorias() {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            return productoDAO.listarCategorias(conexion);
+        } catch (SQLException e) {
+            throw new ServicioException("No se pudieron cargar las categorías.", e);
+        }
+    }
+
+    public List<String> listarColecciones() {
+        try (Connection conexion = ConexionBD.obtenerConexion()) {
+            return productoDAO.listarColecciones(conexion);
+        } catch (SQLException e) {
+            throw new ServicioException("No se pudieron cargar las colecciones.", e);
+        }
+    }
+
     public void crearProducto(Producto producto) {
         validarProducto(producto);
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -70,9 +86,6 @@ public class InventarioService {
         producto.setCategoria(Validador.obligatorio(producto.getCategoria(), "Categoría"));
         if (producto.getPrecio() == null || producto.getPrecio().signum() < 0) {
             throw new ServicioException("El precio no puede ser negativo.");
-        }
-        if (producto.isAplicaTripleImpacto() && producto.getTipoCompromiso() == null) {
-            throw new ServicioException("Un producto con triple impacto debe indicar su tipo de compromiso (ABRIGO o ÁRBOL).");
         }
     }
 

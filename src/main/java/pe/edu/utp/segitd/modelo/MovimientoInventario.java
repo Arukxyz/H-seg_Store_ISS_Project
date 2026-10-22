@@ -11,7 +11,10 @@ public class MovimientoInventario {
     private TipoMovimiento tipoMovimiento;
     private int cantidad;
     private String motivo;
-    private String referencia;
+    /** Origen del movimiento: como máximo uno de los tres (CHECK en la base). */
+    private Integer idVenta;
+    private Integer idLote;
+    private Integer idPedidoProveedor;
     private OrigenSistema origenSistema;
     private Integer idUsuario;
     private OffsetDateTime fecha;
@@ -34,8 +37,14 @@ public class MovimientoInventario {
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
 
-    public String getReferencia() { return referencia; }
-    public void setReferencia(String referencia) { this.referencia = referencia; }
+    public Integer getIdVenta() { return idVenta; }
+    public void setIdVenta(Integer idVenta) { this.idVenta = idVenta; }
+
+    public Integer getIdLote() { return idLote; }
+    public void setIdLote(Integer idLote) { this.idLote = idLote; }
+
+    public Integer getIdPedidoProveedor() { return idPedidoProveedor; }
+    public void setIdPedidoProveedor(Integer idPedidoProveedor) { this.idPedidoProveedor = idPedidoProveedor; }
 
     public OrigenSistema getOrigenSistema() { return origenSistema; }
     public void setOrigenSistema(OrigenSistema origenSistema) { this.origenSistema = origenSistema; }

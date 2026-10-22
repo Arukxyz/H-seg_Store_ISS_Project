@@ -158,7 +158,7 @@ public final class ExcelExporter {
         Sheet hoja = libro.createSheet("Historial de despachos");
         escribirEncabezado(hoja, estiloEncabezado,
                 "Lote", "Comunidad", "Distrito", "Provincia", "ONG", "Responsable",
-                "Fecha creación", "Fecha entrega", "Estado", "Donaciones", "Prendas de abrigo", "Árboles");
+                "Fecha creación", "Fecha despacho", "Fecha entrega", "Estado", "Donaciones", "Prendas de abrigo", "Árboles");
 
         int indiceFila = 1;
         for (FilaHistorialDespacho f : filas) {
@@ -171,12 +171,13 @@ public final class ExcelExporter {
             fila.createCell(5).setCellValue(nvl(f.responsable()));
             fila.createCell(6).setCellValue(formatear(f.fechaCreacion()));
             fila.createCell(7).setCellValue(formatear(f.fechaDespacho()));
-            fila.createCell(8).setCellValue(f.estado().name());
-            fila.createCell(9).setCellValue(f.donaciones());
-            fila.createCell(10).setCellValue(f.prendasAbrigo());
-            fila.createCell(11).setCellValue(f.arboles());
+            fila.createCell(8).setCellValue(formatear(f.fechaEntrega()));
+            fila.createCell(9).setCellValue(f.estado().name());
+            fila.createCell(10).setCellValue(f.donaciones());
+            fila.createCell(11).setCellValue(f.prendasAbrigo());
+            fila.createCell(12).setCellValue(f.arboles());
         }
-        autoajustarColumnas(hoja, 12);
+        autoajustarColumnas(hoja, 13);
     }
 
     private void escribirInventario(Workbook libro, CellStyle estiloEncabezado, List<Producto> productos) {

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,8 @@ public final class MovimientoDAO {
         String sql = """
                 INSERT INTO movimiento_inventario
                     (codigo_producto, tipo_stock, tipo_movimiento, cantidad, motivo,
-                     referencia, origen_sistema, id_usuario)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                     id_venta, id_lote, id_pedido_proveedor, origen_sistema, id_usuario)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, movimiento.getCodigoProducto());
@@ -34,9 +35,11 @@ public final class MovimientoDAO {
             ps.setString(3, movimiento.getTipoMovimiento().name());
             ps.setInt(4, movimiento.getCantidad());
             ps.setString(5, movimiento.getMotivo());
-            ps.setString(6, movimiento.getReferencia());
-            ps.setString(7, movimiento.getOrigenSistema().name());
-            ps.setObject(8, movimiento.getIdUsuario());
+            ps.setObject(6, movimiento.getIdVenta(), Types.INTEGER);
+            ps.setObject(7, movimiento.getIdLote(), Types.INTEGER);
+            ps.setObject(8, movimiento.getIdPedidoProveedor(), Types.INTEGER);
+            ps.setString(9, movimiento.getOrigenSistema().name());
+            ps.setObject(10, movimiento.getIdUsuario(), Types.INTEGER);
             ps.executeUpdate();
             try (ResultSet claves = ps.getGeneratedKeys()) {
                 if (claves.next()) {
@@ -69,7 +72,9 @@ public final class MovimientoDAO {
         movimiento.setTipoMovimiento(TipoMovimiento.valueOf(rs.getString("tipo_movimiento")));
         movimiento.setCantidad(rs.getInt("cantidad"));
         movimiento.setMotivo(rs.getString("motivo"));
-        movimiento.setReferencia(rs.getString("referencia"));
+        movimiento.setIdVenta((Integer) rs.getObject("id_venta"));
+        movimiento.setIdLote((Integer) rs.getObject("id_lote"));
+        movimiento.setIdPedidoProveedor((Integer) rs.getObject("id_pedido_proveedor"));
         movimiento.setOrigenSistema(OrigenSistema.valueOf(rs.getString("origen_sistema")));
         movimiento.setIdUsuario((Integer) rs.getObject("id_usuario"));
         movimiento.setFecha(rs.getObject("fecha", OffsetDateTime.class));

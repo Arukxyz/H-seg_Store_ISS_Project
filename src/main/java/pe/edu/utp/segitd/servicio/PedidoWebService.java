@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
  * anula. Confirmar mueve el stock y genera las donaciones pendientes;
  * anular revierte lo que corresponda (secciones 9.1, 9.2 y 9.3).
  *
- * Los datos de prueba ya traen donaciones PENDIENTE para simular pedidos
- * recién llegados sin depender de la web; por eso confirmarPedido crea la
- * donación solo si todavía no existe una para esa línea de detalle.
+ * La web registra la donación en estado EN_ESPERA al confirmar el carrito
+ * (también la semilla, para simular pedidos recién llegados). Confirmar el
+ * pago la pasa a PENDIENTE, y solo crea una nueva si esa línea de detalle
+ * todavía no tiene donación.
  */
 public class PedidoWebService {
 
@@ -40,6 +41,9 @@ public class PedidoWebService {
     private final DonacionDAO donacionDAO = new DonacionDAO();
     private final ProductoDAO productoDAO = new ProductoDAO();
     private final MovimientoDAO movimientoDAO = new MovimientoDAO();
+
+    private static final String MOTIVO_VENTA = "Venta web confirmada";
+    private static final String MOTIVO_ANULACION = "Anulación de venta web";
 
     public List<Venta> listarPedidos(EstadoVenta estado, OffsetDateTime desde, OffsetDateTime hasta) {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
@@ -89,12 +93,12 @@ public class PedidoWebService {
                         throw new ServicioException("Stock comercial insuficiente para " + producto.getNombre() + ".");
                     }
                     registrarMovimiento(producto.getCodigo(), TipoStock.COMERCIAL, TipoMovimiento.SALIDA,
-                            -linea.getCantidad(), "VENTA:" + idVenta, idUsuario, conexion);
+                            -linea.getCantidad(), MOTIVO_VENTA, idVenta, idUsuario, conexion);
 
                     if (producto.isAplicaTripleImpacto() && producto.getTipoCompromiso() != null) {
                         productoDAO.incrementarStockComprometido(producto.getCodigo(), linea.getCantidad(), conexion);
                         registrarMovimiento(producto.getCodigo(), TipoStock.COMPROMETIDO, TipoMovimiento.INGRESO,
-                                linea.getCantidad(), "VENTA:" + idVenta, idUsuario, conexion);
+                                linea.getCantidad(), MOTIVO_VENTA, idVenta, idUsuario, conexion);
 
                         if (!detallesConDonacion.contains(linea.getId())) {
                             Donacion donacion = new Donacion();
@@ -108,6 +112,7 @@ public class PedidoWebService {
                     }
                 }
 
+                donacionDAO.confirmarEnEsperaPorVenta(idVenta, conexion);
                 ventaDAO.actualizarEstado(idVenta, EstadoVenta.PAGADO, idUsuario, conexion);
                 conexion.commit();
             } catch (ServicioException | SQLException e) {
@@ -135,7 +140,8 @@ public class PedidoWebService {
                 }
 
                 List<Donacion> donaciones = donacionDAO.listarPorVenta(idVenta, conexion);
-                boolean comprometidas = donaciones.stream().anyMatch(d -> d.getEstado() != EstadoDonacion.PENDIENTE);
+                boolean comprometidas = donaciones.stream().anyMatch(d -> d.getEstado() != EstadoDonacion.EN_ESPERA
+                        && d.getEstado() != EstadoDonacion.PENDIENTE);
                 if (comprometidas) {
                     throw new ServicioException("No se puede anular: ya tiene donaciones asignadas a un lote de despacho.");
                 }
@@ -147,13 +153,13 @@ public class PedidoWebService {
 
                         productoDAO.incrementarStockComercial(producto.getCodigo(), linea.getCantidad(), conexion);
                         registrarMovimiento(producto.getCodigo(), TipoStock.COMERCIAL, TipoMovimiento.INGRESO,
-                                linea.getCantidad(), "ANULACION:" + idVenta, idUsuario, conexion);
+                                linea.getCantidad(), MOTIVO_ANULACION, idVenta, idUsuario, conexion);
 
                         if (producto.isAplicaTripleImpacto() && producto.getTipoCompromiso() != null) {
                             boolean descontado = productoDAO.descontarStockComprometido(producto.getCodigo(), linea.getCantidad(), conexion);
                             if (descontado) {
                                 registrarMovimiento(producto.getCodigo(), TipoStock.COMPROMETIDO, TipoMovimiento.SALIDA,
-                                        -linea.getCantidad(), "ANULACION:" + idVenta, idUsuario, conexion);
+                                        -linea.getCantidad(), MOTIVO_ANULACION, idVenta, idUsuario, conexion);
                             }
                         }
                     }
@@ -177,13 +183,14 @@ public class PedidoWebService {
     }
 
     private void registrarMovimiento(String codigoProducto, TipoStock tipoStock, TipoMovimiento tipoMovimiento,
-                                      int cantidad, String referencia, int idUsuario, Connection conexion) throws SQLException {
+                                      int cantidad, String motivo, int idVenta, int idUsuario, Connection conexion) throws SQLException {
         MovimientoInventario movimiento = new MovimientoInventario();
         movimiento.setCodigoProducto(codigoProducto);
         movimiento.setTipoStock(tipoStock);
         movimiento.setTipoMovimiento(tipoMovimiento);
         movimiento.setCantidad(cantidad);
-        movimiento.setReferencia(referencia);
+        movimiento.setMotivo(motivo);
+        movimiento.setIdVenta(idVenta);
         movimiento.setOrigenSistema(OrigenSistema.ESCRITORIO);
         movimiento.setIdUsuario(idUsuario);
         movimientoDAO.registrar(movimiento, conexion);
