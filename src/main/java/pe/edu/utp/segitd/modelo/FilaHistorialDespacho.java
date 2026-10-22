@@ -16,6 +16,7 @@ public record FilaHistorialDespacho(
         String responsable,
         OffsetDateTime fechaCreacion,
         OffsetDateTime fechaDespacho,
+        OffsetDateTime fechaEntrega,
         EstadoLote estado,
         int donaciones,
         int prendasAbrigo,

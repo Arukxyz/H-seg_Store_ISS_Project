@@ -144,11 +144,27 @@ public final class DonacionDAO {
         }
     }
 
+    /**
+     * Al confirmar el pago de un pedido web, sus donaciones EN_ESPERA pasan a
+     * PENDIENTE: recién entonces pueden agruparse en un lote.
+     */
+    public void confirmarEnEsperaPorVenta(int idVenta, Connection conexion) throws SQLException {
+        String sql = """
+                UPDATE donacion SET estado = 'PENDIENTE'
+                 WHERE estado = 'EN_ESPERA'
+                   AND id_detalle_venta IN (SELECT id FROM detalle_venta WHERE id_venta = ?)
+                """;
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, idVenta);
+            ps.executeUpdate();
+        }
+    }
+
     /** Al anular un pedido web, elimina las donaciones que aún no fueron asignadas a un lote. */
     public void eliminarPendientesPorVenta(int idVenta, Connection conexion) throws SQLException {
         String sql = """
                 DELETE FROM donacion
-                 WHERE estado = 'PENDIENTE'
+                 WHERE estado IN ('EN_ESPERA', 'PENDIENTE')
                    AND id_detalle_venta IN (SELECT id FROM detalle_venta WHERE id_venta = ?)
                 """;
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -167,7 +183,7 @@ public final class DonacionDAO {
                                                        Connection conexion) throws SQLException {
         StringBuilder sql = new StringBuilder("""
                 SELECT v.codigo_comprobante, v.fecha AS fecha_venta, p.nombre AS producto_nombre,
-                       d.cantidad, d.tipo, d.estado, l.codigo_lote, c.nombre AS comunidad_nombre, l.fecha_despacho
+                       d.cantidad, d.tipo, d.estado, l.codigo_lote, c.nombre AS comunidad_nombre, l.fecha_entrega
                   FROM donacion d
                   JOIN detalle_venta dv ON dv.id = d.id_detalle_venta
                   JOIN venta v ON v.id = dv.id_venta
@@ -213,7 +229,7 @@ public final class DonacionDAO {
                             EstadoDonacion.valueOf(rs.getString("estado")),
                             rs.getString("codigo_lote"),
                             rs.getString("comunidad_nombre"),
-                            rs.getObject("fecha_despacho", OffsetDateTime.class)));
+                            rs.getObject("fecha_entrega", OffsetDateTime.class)));
                 }
                 return resultado;
             }

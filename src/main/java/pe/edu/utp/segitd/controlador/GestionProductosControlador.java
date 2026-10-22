@@ -17,6 +17,14 @@ public class GestionProductosControlador {
         return inventarioService.listarProductos();
     }
 
+    public List<String> listarCategorias() {
+        return inventarioService.listarCategorias();
+    }
+
+    public List<String> listarColecciones() {
+        return inventarioService.listarColecciones();
+    }
+
     public void crearProducto(Producto producto) {
         inventarioService.crearProducto(producto);
     }

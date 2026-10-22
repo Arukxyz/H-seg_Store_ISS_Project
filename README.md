@@ -22,6 +22,7 @@ Ejecutar en el SQL Editor de Supabase, en este orden:
 | `src/main/resources/sql/04_comunidad_marcapata.sql` | Solo para bases cargadas antes de que Marcapata estuviera en `02` (idempotente) |
 | `src/main/resources/sql/05_correccion_fechas_lotes.sql` | Solo para bases cargadas con una versión anterior de `03` (idempotente, incluye consultas de verificación) |
 | `src/main/resources/sql/06_web_clientes.sql` | Requisito del portal web (Spring Boot): columnas de autenticación en `cliente`, secuencia de comprobantes `WEB-nnnnnn` e índice para la consulta de impacto (idempotente) |
+| `src/main/resources/sql/07_normalizacion.sql` | Normalización e integridad: estado `EN_ESPERA` de la donación, tablas `categoria` y `coleccion`, `aplica_triple_impacto` generada, bitácora con claves foráneas, `fecha_entrega` del lote, validaciones, índices y permisos de la API (idempotente; requiere el código de escritorio y web de la misma versión) |
 
 Los hashes de contraseña de `02` se generan con `GeneradorHash` (`mvn compile exec:java -Dexec.mainClass=pe.edu.utp.segitd.util.GeneradorHash`), nunca a mano.
 

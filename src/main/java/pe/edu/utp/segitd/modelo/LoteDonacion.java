@@ -14,7 +14,10 @@ public class LoteDonacion {
     private String ongNombre;
     private Integer idUsuarioResponsable;
     private OffsetDateTime fechaCreacion;
+    /** Salida a ruta (EN_RUTA). */
     private OffsetDateTime fechaDespacho;
+    /** Entrega a la comunidad (ENTREGADO). */
+    private OffsetDateTime fechaEntrega;
     private EstadoLote estado;
     private String observaciones;
 
@@ -44,6 +47,9 @@ public class LoteDonacion {
 
     public OffsetDateTime getFechaDespacho() { return fechaDespacho; }
     public void setFechaDespacho(OffsetDateTime fechaDespacho) { this.fechaDespacho = fechaDespacho; }
+
+    public OffsetDateTime getFechaEntrega() { return fechaEntrega; }
+    public void setFechaEntrega(OffsetDateTime fechaEntrega) { this.fechaEntrega = fechaEntrega; }
 
     public EstadoLote getEstado() { return estado; }
     public void setEstado(EstadoLote estado) { this.estado = estado; }

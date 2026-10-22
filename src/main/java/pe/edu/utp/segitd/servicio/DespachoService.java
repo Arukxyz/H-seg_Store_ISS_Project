@@ -130,7 +130,7 @@ public class DespachoService {
                                     "Stock comprometido insuficiente para " + donacion.getNombreProducto() + ".");
                         }
                         registrarMovimiento(donacion.getCodigoProducto(), donacion.getCantidad(),
-                                lote.getCodigoLote(), idUsuario, conexion);
+                                idLote, idUsuario, conexion);
                     }
                     donacionDAO.marcarEntregadasPorLote(idLote, conexion);
                 }
@@ -162,14 +162,15 @@ public class DespachoService {
         }
     }
 
-    private void registrarMovimiento(String codigoProducto, int cantidad, String codigoLote, int idUsuario,
+    private void registrarMovimiento(String codigoProducto, int cantidad, int idLote, int idUsuario,
                                       Connection conexion) throws SQLException {
         MovimientoInventario movimiento = new MovimientoInventario();
         movimiento.setCodigoProducto(codigoProducto);
         movimiento.setTipoStock(TipoStock.COMPROMETIDO);
         movimiento.setTipoMovimiento(TipoMovimiento.SALIDA);
         movimiento.setCantidad(-cantidad);
-        movimiento.setReferencia("LOTE:" + codigoLote);
+        movimiento.setMotivo("Entrega de lote de donación");
+        movimiento.setIdLote(idLote);
         movimiento.setOrigenSistema(OrigenSistema.ESCRITORIO);
         movimiento.setIdUsuario(idUsuario);
         movimientoDAO.registrar(movimiento, conexion);

@@ -475,7 +475,7 @@ private void abrirArchivo(File archivo) {
     }
 
     private static final class ModeloLotes extends AbstractTableModel {
-        private final String[] columnas = {"Código", "Comunidad", "ONG", "Estado", "Creado", "Despachado"};
+        private final String[] columnas = {"Código", "Comunidad", "ONG", "Estado", "Creado", "Despachado", "Entregado"};
         private List<LoteDonacion> lotes = List.of();
 
         void actualizar(List<LoteDonacion> nuevos) {
@@ -512,6 +512,7 @@ private void abrirArchivo(File archivo) {
                 case 3 -> l.getEstado();
                 case 4 -> formatear(l.getFechaCreacion());
                 case 5 -> formatear(l.getFechaDespacho());
+                case 6 -> formatear(l.getFechaEntrega());
                 default -> null;
             };
         }
