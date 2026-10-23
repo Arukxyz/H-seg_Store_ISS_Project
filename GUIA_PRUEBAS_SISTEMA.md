@@ -15,7 +15,7 @@ db.url=jdbc:postgresql://<HOST_SUPABASE>:5432/postgres?sslmode=require
 db.user=<USUARIO_POSTGRES>
 db.password=<CONTRASEÑA_SUPABASE>
 db.pool.size=5
-portal.consulta.url=https://hosegstore.com
+portal.consulta.url=http://localhost:8080/consulta-impacto
 ```
 
 ---
@@ -47,7 +47,7 @@ portal.consulta.url=https://hosegstore.com
 ### MÓDULO 2: Inventario Dual y Sincronización Atómica de Pedidos Web
 * **Caso de Prueba 2.1 - Consulta de Inventario Dual:** En `GestionProductosJFrame` se valida la separación estricta de saldos: **Stock Comercial** (disponible para ventas web) y **Stock Comprometido** (unidades reservadas para donación).
 * **Caso de Prueba 2.2 - Protección del Stock de Donaciones:** Verificar que `InventarioService` rechaza cualquier intento de ajuste o decremento manual negativo sobre el stock comprometido, evitando desvíos o manipulaciones no autorizadas en el inventario social.
-* **Caso de Prueba 2.3 - Procesamiento Atómico de Pedidos:** Al confirmar un pedido de la tabla `pedido`, `PedidoWebService` ejecuta un `UPDATE` atómico en bloque disminuyendo el stock comercial y registrando en paralelo el nuevo ítem en la tabla `donacion` con estado `PENDIENTE`.
+* **Caso de Prueba 2.3 - Procesamiento Atómico de Pedidos:** Al confirmar un pedido web (tabla `venta`, estado `PENDIENTE`), `PedidoWebService` descuenta el stock comercial, incrementa el comprometido, pasa sus donaciones de `EN_ESPERA` a `PENDIENTE` y su envío a `PREPARANDO`, todo en una sola transacción.
 
 ### MÓDULO 3: Emisión de Boleta Digital PDF con QR 
 * **Caso de Prueba 3.1 - Generación de Boleta PDF (PDFBox + ZXing):** En la pantalla de *Pedidos Web*, al seleccionar un pedido `PAGADO` y presionar **"Emitir Boleta PDF"**, el sistema genera un documento en la carpeta `boletas/` con los datos de 14-DIEZ S.A.C., desglose de IGV y un **Código QR dinámico**.
