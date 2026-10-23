@@ -1,6 +1,7 @@
 package pe.edu.utp.segitd.servicio;
 
 import pe.edu.utp.segitd.dao.DonacionDAO;
+import pe.edu.utp.segitd.dao.EnvioDAO;
 import pe.edu.utp.segitd.dao.MovimientoDAO;
 import pe.edu.utp.segitd.dao.ProductoDAO;
 import pe.edu.utp.segitd.dao.VentaDAO;
@@ -34,11 +35,16 @@ import java.util.stream.Collectors;
  * (también la semilla, para simular pedidos recién llegados). Confirmar el
  * pago la pasa a PENDIENTE, y solo crea una nueva si esa línea de detalle
  * todavía no tiene donación.
+ *
+ * El envío del pedido (script 08) acompaña al pago: confirmar lo pasa a
+ * PREPARANDO y anular lo cancela. Un pedido que ya salió con el courier
+ * no se puede anular.
  */
 public class PedidoWebService {
 
     private final VentaDAO ventaDAO = new VentaDAO();
     private final DonacionDAO donacionDAO = new DonacionDAO();
+    private final EnvioDAO envioDAO = new EnvioDAO();
     private final ProductoDAO productoDAO = new ProductoDAO();
     private final MovimientoDAO movimientoDAO = new MovimientoDAO();
 
@@ -113,6 +119,7 @@ public class PedidoWebService {
                 }
 
                 donacionDAO.confirmarEnEsperaPorVenta(idVenta, conexion);
+                envioDAO.marcarPreparando(idVenta, conexion);
                 ventaDAO.actualizarEstado(idVenta, EstadoVenta.PAGADO, idUsuario, conexion);
                 conexion.commit();
             } catch (ServicioException | SQLException e) {
@@ -145,6 +152,9 @@ public class PedidoWebService {
                 if (comprometidas) {
                     throw new ServicioException("No se puede anular: ya tiene donaciones asignadas a un lote de despacho.");
                 }
+                if (envioDAO.fueDespachado(idVenta, conexion)) {
+                    throw new ServicioException("No se puede anular: el pedido ya salió con el courier o fue entregado.");
+                }
 
                 if (venta.getEstado() == EstadoVenta.PAGADO) {
                     for (DetalleVenta linea : ventaDAO.listarDetalle(idVenta, conexion)) {
@@ -166,6 +176,7 @@ public class PedidoWebService {
                 }
 
                 donacionDAO.eliminarPendientesPorVenta(idVenta, conexion);
+                envioDAO.cancelarPorVenta(idVenta, conexion);
                 ventaDAO.actualizarEstado(idVenta, EstadoVenta.ANULADO, idUsuario, conexion);
                 conexion.commit();
             } catch (ServicioException | SQLException e) {

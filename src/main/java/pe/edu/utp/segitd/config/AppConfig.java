@@ -16,8 +16,8 @@ public final class AppConfig {
 
     private static final String ARCHIVO_CONFIG = "config.properties";
     private static final int POOL_SIZE_POR_DEFECTO = 5;
-    /** Portal público de consulta de impacto (lo sirve el equipo web); el QR de la boleta apunta aquí. */
-    private static final String PORTAL_CONSULTA_URL_POR_DEFECTO = "https://hosegstore.pe/consulta-impacto.html";
+    /** Portal público de consulta de impacto (lo sirve la web en /consulta-impacto); el QR de la boleta apunta aquí. Cambiar al dominio real cuando se publique. */
+    private static final String PORTAL_CONSULTA_URL_POR_DEFECTO = "http://localhost:8080/consulta-impacto";
 
     private static volatile AppConfig instancia;
 
